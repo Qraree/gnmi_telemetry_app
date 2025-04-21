@@ -1,15 +1,31 @@
-from typing import Union
+from typing import Optional
+from fastapi import FastAPI, HTTPException
+from sqlmodel import SQLModel, Field, create_engine, Session, select
+from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from models.Device import Device
 
-app = FastAPI()
+sqlite_url = "sqlite:///database.db"
+engine = create_engine(sqlite_url, echo=True)
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    SQLModel.metadata.create_all(engine)
+    yield
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+app = FastAPI(lifespan=lifespan)
 
+@app.get("/devices/")
+def get_heroes():
+    with Session(engine) as session:
+        devices = session.exec(select(Device)).all()
+        return devices
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id , "q": q}
+@app.post("/devices/")
+def create_device(device: Device):
+    with Session(engine) as session:
+        session.add(device)
+        session.commit()
+        session.refresh(device)
+        return device
+
