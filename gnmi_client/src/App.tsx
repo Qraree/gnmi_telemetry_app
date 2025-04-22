@@ -1,16 +1,17 @@
-import './App.css'
+import "./App.css";
+import NetworkDevicesList from "./components/DeviceList.tsx";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 function App() {
-
-  // const [state, setState] = useState()
+  const queryClient = new QueryClient();
 
   return (
     <>
-        <h1 className="text-3xl font-bold">
-            Hello world!
-        </h1>
+      <QueryClientProvider client={queryClient}>
+        <NetworkDevicesList />
+      </QueryClientProvider>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

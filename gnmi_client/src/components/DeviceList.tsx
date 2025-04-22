@@ -1,0 +1,56 @@
+import { DeviceCard } from "./DeviceCard.tsx";
+import { Button, Col, ConfigProvider, Input, Row } from "antd";
+import { useQuery } from "@tanstack/react-query";
+import { getAllDevices } from "../api/devices_api.ts";
+import { Device } from "../types/device.ts";
+
+export default function NetworkDevicesList() {
+  const { isPending, error, data } = useQuery({
+    queryKey: ["devices"],
+    queryFn: getAllDevices,
+  });
+
+  if (isPending) return "Loading...";
+
+  if (error) return "An error has occurred: " + error.message;
+
+  return (
+    <ConfigProvider
+      theme={{ token: { colorBgBase: "#1a1a1a", colorTextBase: "#ffffff" } }}
+    >
+      <div
+        style={{
+          backgroundColor: "#100f0f",
+          padding: "32px",
+          minHeight: "100vh",
+        }}
+      >
+        <div style={{ margin: "0 auto", maxWidth: "100%" }}>
+          <h1
+            style={{ color: "white", fontSize: "36px", marginBottom: "24px" }}
+          >
+            Network Devices
+          </h1>
+
+          <Row gutter={[16, 16]} style={{ marginBottom: "32px" }}>
+            <Col span={12}>
+              <Input
+                placeholder="Search devices..."
+                style={{ width: "100%", background: "#1a1a1a" }}
+              />
+            </Col>
+            <Col span={12} style={{ textAlign: "right" }}>
+              <Button type="default">+ Add Device</Button>
+            </Col>
+          </Row>
+
+          <div>
+            {data.map((device: Device) => (
+              <DeviceCard key={device.id} device={device} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </ConfigProvider>
+  );
+}

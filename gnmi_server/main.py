@@ -2,6 +2,11 @@ from typing import Optional
 from fastapi import FastAPI, HTTPException
 from sqlmodel import SQLModel, Field, create_engine, Session, select
 from contextlib import asynccontextmanager
+from fastapi.middleware.cors import CORSMiddleware
+
+
+
+origins = ["http://localhost:5173"]
 
 from models.Device import Device
 
@@ -14,6 +19,14 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/devices/")
 def get_heroes():
