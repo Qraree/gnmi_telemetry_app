@@ -1,4 +1,5 @@
 export const getAllDevices = async () => {
-  const response = await fetch(import.meta.env.VITE_SERVER_URL);
+  const baseUrl = import.meta.env.VITE_SERVER_URL;
+  const response = await fetch(`${baseUrl}/devices`);
   return await response.json();
 };

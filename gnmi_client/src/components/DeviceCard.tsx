@@ -7,7 +7,7 @@ export const DeviceCard = ({ device }: { device: Device }) => (
     style={{ width: "100%", marginBottom: 16, background: "#1a1a1a" }}
     extra={[
       <Tag color="green" key="status">
-        {device.status}
+        Active
       </Tag>,
       <Button key="details" type="link">
         Details

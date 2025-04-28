@@ -1,6 +1,10 @@
 import "./App.css";
-import NetworkDevicesList from "./components/DeviceList.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { MainPage } from "./pages/MainPage.tsx";
+import { ConfigProvider } from "antd";
+import { BrowserRouter, Route, Routes } from "react-router";
+import NetworkDevicesList from "./components/DeviceList.tsx";
+import { GraphPage } from "./pages/GraphPage.tsx";
 
 function App() {
   const queryClient = new QueryClient();
@@ -8,7 +12,27 @@ function App() {
   return (
     <>
       <QueryClientProvider client={queryClient}>
-        <NetworkDevicesList />
+        <ConfigProvider
+        theme={{
+          components: {
+            Menu: {
+              colorItemText: '#fff',
+              colorItemTextHover: '#c8c2c2',
+              colorItemTextSelected: '#000000',
+            },
+
+        },
+          token: { colorBgBase: "#1a1a1a", colorTextBase: "#ffffff" }
+        }}>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<MainPage />}>
+                <Route index path="/devices" element={<NetworkDevicesList />}/>
+                <Route index path="/graph" element={<GraphPage />}/>
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </ConfigProvider>
       </QueryClientProvider>
     </>
   );
