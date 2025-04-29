@@ -13,22 +13,22 @@ function App() {
     <>
       <QueryClientProvider client={queryClient}>
         <ConfigProvider
-        theme={{
-          components: {
-            Menu: {
-              colorItemText: '#fff',
-              colorItemTextHover: '#c8c2c2',
-              colorItemTextSelected: '#000000',
+          theme={{
+            components: {
+              Menu: {
+                itemColor: "#fff",
+                itemHoverColor: "#c8c2c2",
+                itemSelectedColor: "#000000",
+              },
             },
-
-        },
-          token: { colorBgBase: "#1a1a1a", colorTextBase: "#ffffff" }
-        }}>
+            token: { colorBgBase: "#1a1a1a", colorTextBase: "#ffffff" },
+          }}
+        >
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<MainPage />}>
-                <Route index path="/devices" element={<NetworkDevicesList />}/>
-                <Route index path="/graph" element={<GraphPage />}/>
+                <Route index path="/devices" element={<NetworkDevicesList />} />
+                <Route path="/graph" element={<GraphPage />} />
               </Route>
             </Routes>
           </BrowserRouter>
