@@ -1,7 +1,11 @@
 import { DeviceCard } from "./DeviceCard.tsx";
 import { Button, Col, Input, Row } from "antd";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { getAllDevices, testRPCRequest } from "../api/devices_api.ts";
+import {
+  getAllDevices,
+  testRPCRequest,
+  testSSHRequest,
+} from "../api/devices_api.ts";
 import { Device } from "../types/device.ts";
 
 export default function NetworkDevicesList() {
@@ -12,6 +16,10 @@ export default function NetworkDevicesList() {
 
   const testRequest = useMutation({
     mutationFn: testRPCRequest,
+  });
+
+  const testSshRequest = useMutation({
+    mutationFn: testSSHRequest,
   });
 
   if (isPending) return "Loading...";
@@ -44,6 +52,9 @@ export default function NetworkDevicesList() {
             <Col span={12} style={{ textAlign: "right" }}>
               <Button type="default" onClick={() => testRequest.mutate()}>
                 + Add Device
+              </Button>
+              <Button type="default" onClick={() => testSshRequest.mutate()}>
+                test ssh
               </Button>
             </Col>
           </Row>

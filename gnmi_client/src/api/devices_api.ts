@@ -9,3 +9,9 @@ export const testRPCRequest = async (): Promise<void> => {
   const response = await fetch(`${baseUrl}/test`);
   return await response.json();
 };
+
+export const testSSHRequest = async (): Promise<void> => {
+  const baseUrl = import.meta.env.VITE_SERVER_URL;
+  const response = await fetch(`${baseUrl}/test/ssh`);
+  return await response.json();
+};

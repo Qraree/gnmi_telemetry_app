@@ -8,7 +8,7 @@ device_router = APIRouter()
 
 
 @device_router.get("/devices/")
-def get_heroes():
+def get_all_devices():
     with Session(engine) as session:
         devices = session.exec(select(Device)).all()
         return devices
