@@ -1,4 +1,4 @@
-import { DeviceCard } from "./DeviceCard.tsx";
+import { DeviceListCard } from "./DeviceListCard.tsx";
 import { Button, Col, Input, Row } from "antd";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
@@ -61,7 +61,7 @@ export default function NetworkDevicesList() {
 
           <div>
             {data.map((device: Device) => (
-              <DeviceCard key={device.id} device={device} />
+              <DeviceListCard key={device.id} device={device} />
             ))}
           </div>
         </div>

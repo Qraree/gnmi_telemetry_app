@@ -5,6 +5,7 @@ import { ConfigProvider } from "antd";
 import { BrowserRouter, Route, Routes } from "react-router";
 import NetworkDevicesList from "./components/DeviceList.tsx";
 import { GraphPage } from "./pages/GraphPage.tsx";
+import { DeviceCard } from "./components/DeviceCard.tsx";
 
 function App() {
   const queryClient = new QueryClient();
@@ -27,7 +28,8 @@ function App() {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<MainPage />}>
-                <Route index path="/devices" element={<NetworkDevicesList />} />
+                <Route path="/devices" element={<NetworkDevicesList />} />
+                <Route path="/devices/:device" element={<DeviceCard />} />
                 <Route path="/graph" element={<GraphPage />} />
               </Route>
             </Routes>

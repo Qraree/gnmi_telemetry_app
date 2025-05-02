@@ -4,6 +4,12 @@ export const getAllDevices = async () => {
   return await response.json();
 };
 
+export const getAllConnections = async () => {
+  const baseUrl = import.meta.env.VITE_SERVER_URL;
+  const response = await fetch(`${baseUrl}/devices/connections`);
+  return await response.json();
+};
+
 export const testRPCRequest = async (): Promise<void> => {
   const baseUrl = import.meta.env.VITE_SERVER_URL;
   const response = await fetch(`${baseUrl}/test`);
@@ -12,6 +18,6 @@ export const testRPCRequest = async (): Promise<void> => {
 
 export const testSSHRequest = async (): Promise<void> => {
   const baseUrl = import.meta.env.VITE_SERVER_URL;
-  const response = await fetch(`${baseUrl}/test/ssh`);
+  const response = await fetch(`${baseUrl}/test/connections`);
   return await response.json();
 };

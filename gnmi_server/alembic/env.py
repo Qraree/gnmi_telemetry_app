@@ -12,6 +12,7 @@ if config.config_file_name is not None:
 
 from sqlmodel import SQLModel
 from models.Device import Device
+from models.Device import Connection
 
 target_metadata = SQLModel.metadata
 

@@ -1,7 +1,7 @@
 import React from "react";
 import type { MenuProps } from "antd";
 import { Layout, Menu } from "antd";
-import { Link, Outlet } from "react-router";
+import { Link, Outlet, useLocation } from "react-router";
 
 const { Content, Sider } = Layout;
 
@@ -21,16 +21,18 @@ const siderStyle: React.CSSProperties = {
 
 const items: MenuProps["items"] = [
   {
-    key: 0,
+    key: "/devices",
     label: <Link to="/devices">Список устройств</Link>,
   },
   {
-    key: 1,
+    key: "/graph",
     label: <Link to="/graph">Схема устройств</Link>,
   },
 ];
 
 export const MainPage: React.FC = () => {
+  const location = useLocation();
+
   return (
     <Layout hasSider style={{ backgroundColor: "#100f0f" }}>
       <Sider style={siderStyle} theme="light">
@@ -38,7 +40,7 @@ export const MainPage: React.FC = () => {
         <Menu
           theme="light"
           mode="inline"
-          defaultSelectedKeys={["/devices"]}
+          defaultSelectedKeys={[location.pathname]}
           items={items}
           style={{ backgroundColor: "#100f0f" }}
         />

@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from sqlmodel import Session, select
 
 from core.database import engine
-from models.Device import Device
+from models.Device import Device, Connection
 
 device_router = APIRouter()
 
@@ -11,6 +11,13 @@ device_router = APIRouter()
 def get_all_devices():
     with Session(engine) as session:
         devices = session.exec(select(Device)).all()
+        return devices
+
+
+@device_router.get("/devices/connections/")
+def get_all_devices():
+    with Session(engine) as session:
+        devices = session.exec(select(Connection)).all()
         return devices
 
 

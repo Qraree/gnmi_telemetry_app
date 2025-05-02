@@ -46,8 +46,37 @@ def test():
         return result
 
 
+@app.get("/test/connections")
+def test():
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+    try:
+        ssh.connect(
+            settings.lab_server,
+            username=settings.ssh_username,
+            password=settings.ssh_password,
+        )
+
+        command = "cd gnmi_graf_prom/ && yq '.topology.links[] | {endpoints}' ./topology.club.yml"
+        stdin, stdout, stderr = ssh.exec_command(command)
+        json_data = stdout.read().decode("utf-8")
+
+        data = json.loads(json_data)
+
+        print(data)
+
+        return data
+
+    except Exception as e:
+        print(e)
+
+    finally:
+        ssh.close()
+
+
 @app.get("/test/ssh")
-def test_ssh():
+def migrate_lab_devices():
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
