@@ -24,6 +24,7 @@ class Device(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     short_id: str | None = Field(default=None, nullable=True)
     name: str = Field()
+    type: str | None = Field(nullable=True)
     image: str | None = Field(nullable=True)
     state: str | None = Field(nullable=True)
     status: str | None = Field(nullable=True)
