@@ -1,12 +1,26 @@
+import { Device } from "../types/device.ts";
+
+export const getDeviceSpecs = async (id: number): Promise<Device> => {
+  const baseUrl = import.meta.env.VITE_SERVER_URL;
+  const response = await fetch(`${baseUrl}/devices/${id}/specs`);
+  return await response.json();
+};
+
 export const getAllDevices = async () => {
   const baseUrl = import.meta.env.VITE_SERVER_URL;
-  const response = await fetch(`${baseUrl}/devices`);
+  const response = await fetch(`${baseUrl}/devices/`);
+  return await response.json();
+};
+
+export const getOneDevice = async (id: number): Promise<Device> => {
+  const baseUrl = import.meta.env.VITE_SERVER_URL;
+  const response = await fetch(`${baseUrl}/devices/${id}`);
   return await response.json();
 };
 
 export const getAllConnections = async () => {
   const baseUrl = import.meta.env.VITE_SERVER_URL;
-  const response = await fetch(`${baseUrl}/devices/connections`);
+  const response = await fetch(`${baseUrl}/connections`);
   return await response.json();
 };
 

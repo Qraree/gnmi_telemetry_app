@@ -5,9 +5,13 @@ import { getAllConnections, getAllDevices } from "../api/devices_api.ts";
 import { Connection, Device, VisEdge } from "../types/device.ts";
 import { Flex } from "antd";
 import { visConfig } from "../utils/constants.ts";
+import { GraphModal } from "../components/GraphModal/GraphModal.tsx";
+import { LayoutPage } from "./PageLayout.tsx";
+import { useTheme } from "../hooks/useTheme.tsx";
 
 export const GraphPage = () => {
   const visJsRef = useRef(null);
+  const { theme } = useTheme();
 
   const { data: devices } = useQuery({
     queryKey: ["devices"],
@@ -22,7 +26,6 @@ export const GraphPage = () => {
   const handleEdgeClick = (edge: VisEdge) => {
     setModalVisible(true);
     setSelectedEdge(edge);
-    console.log(edge);
   };
 
   const [selectedEdge, setSelectedEdge] = useState<VisEdge | null>(null);
@@ -38,7 +41,7 @@ export const GraphPage = () => {
         title: `IP: ${d.container_ipv4_address || "—"}`,
         image: "/router.svg",
         shape: "image",
-        font: { color: "#ffffff" },
+        font: { color: "#a59898" },
       }));
 
       const edges = connections.map((c: Connection) => ({
@@ -78,62 +81,33 @@ export const GraphPage = () => {
   }, [visJsRef, visNodes, visEdges]);
 
   return (
-    <div
-      className="p-9 "
-      style={{
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-      }}
-    >
-      <h1 style={{ color: "white", fontSize: "36px" }}>
-        Network Devices Graph
-      </h1>
-      <Flex
-        dir="row"
+    <LayoutPage title="Network Devices Graph">
+      <div
         style={{
-          borderColor: "white",
-          backgroundColor: "#414143",
-          height: "100%",
-          width: "100%",
-          maxWidth: "100%",
-          minWidth: "30%",
-          maxHeight: "512px",
-          marginBottom: 50,
-          borderRadius: 5,
-          overflow: "hidden",
-          position: "relative",
+          height: "100vh",
         }}
       >
-        <div ref={visJsRef} style={{ width: "100%" }} />
-        <div
+        <Flex
           style={{
-            position: "absolute",
-            right: 0,
-            top: 0,
+            backgroundColor: theme.graphBackgroundColor,
             height: "100%",
-            width: "30%",
-            background: "#79898e",
-            padding: 15,
-            transition: "transform 0.3s ease-in-out",
-            transform: isModalVisible ? "translateX(0)" : "translateX(100%)",
-            boxShadow: isModalVisible ? "-4px 0 10px rgba(0,0,0,0.2)" : "none",
+            width: "100%",
+            maxWidth: "100%",
+            minWidth: "30%",
+            maxHeight: "80%",
+            borderRadius: 5,
+            overflow: "hidden",
+            position: "relative",
           }}
         >
-          <Flex dir="column">
-            <Flex dir="row" justify="space-between" style={{ width: "100%" }}>
-              <div>{selectedEdge?.label}</div>
-              <div
-                onClick={() => setModalVisible(false)}
-                style={{ cursor: "pointer" }}
-              >
-                x
-              </div>
-            </Flex>
-          </Flex>
-        </div>
-      </Flex>
-    </div>
+          <div ref={visJsRef} style={{ width: "100%" }} />
+          <GraphModal
+            isModalVisible={isModalVisible}
+            setModalVisible={setModalVisible}
+            selectedEdge={selectedEdge}
+          />
+        </Flex>
+      </div>
+    </LayoutPage>
   );
 };

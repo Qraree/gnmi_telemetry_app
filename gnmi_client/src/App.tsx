@@ -1,14 +1,27 @@
 import "./App.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { MainPage } from "./pages/MainPage.tsx";
+import { MainPage } from "./pages/MainPage/MainPage.tsx";
 import { ConfigProvider } from "antd";
 import { BrowserRouter, Route, Routes } from "react-router";
-import NetworkDevicesList from "./components/DeviceList.tsx";
 import { GraphPage } from "./pages/GraphPage.tsx";
 import { DeviceCard } from "./components/DeviceCard.tsx";
+import {
+  darkTextColor,
+  lightTextColor,
+  lightThemeConfig,
+  secondaryDarkBackgroundColor,
+  secondaryLightBackgroundColor,
+  ThemeColor,
+  ThemeConfig,
+} from "./utils/constants.ts";
+import { DevicePage } from "./pages/DevicePage.tsx";
+import { useState } from "react";
+import { ThemeContext } from "./utils/theme-context.ts";
 
 function App() {
   const queryClient = new QueryClient();
+  const [theme, setTheme] = useState<ThemeConfig>(lightThemeConfig);
+  const isLightTheme = theme.theme === ThemeColor.light;
 
   return (
     <>
@@ -17,22 +30,27 @@ function App() {
           theme={{
             components: {
               Menu: {
-                itemColor: "#fff",
-                itemHoverColor: "#c8c2c2",
-                itemSelectedColor: "#000000",
+                itemColor: isLightTheme ? darkTextColor : lightTextColor,
+                // itemSelectedColor: !isLightTheme ? darkTextColor : "#0d3fea",
               },
             },
-            token: { colorBgBase: "#1a1a1a", colorTextBase: "#ffffff" },
+            token: {
+              colorFillSecondary: isLightTheme
+                ? secondaryLightBackgroundColor
+                : secondaryDarkBackgroundColor,
+            },
           }}
         >
           <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<MainPage />}>
-                <Route path="/devices" element={<NetworkDevicesList />} />
-                <Route path="/devices/:device" element={<DeviceCard />} />
-                <Route path="/graph" element={<GraphPage />} />
-              </Route>
-            </Routes>
+            <ThemeContext.Provider value={{ theme, setTheme }}>
+              <Routes>
+                <Route path="/" element={<MainPage />}>
+                  <Route path="/devices" element={<DevicePage />} />
+                  <Route path="/devices/:device" element={<DeviceCard />} />
+                  <Route path="/graph" element={<GraphPage />} />
+                </Route>
+              </Routes>
+            </ThemeContext.Provider>
           </BrowserRouter>
         </ConfigProvider>
       </QueryClientProvider>

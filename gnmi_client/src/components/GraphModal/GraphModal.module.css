@@ -1,0 +1,9 @@
+.modal {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 30%;
+    padding: 15px;
+    transition: transform 0.3s ease-in-out;
+}

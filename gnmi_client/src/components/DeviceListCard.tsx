@@ -1,12 +1,27 @@
 import { Device } from "../types/device.ts";
 import { Button, Card, Flex, Tag } from "antd";
 import { RouterSVG } from "../assets/RouterSVG.tsx";
+import { useTheme } from "../hooks/useTheme.tsx";
+import { cardDarkColor, cardLightColor } from "../utils/constants.ts";
+import { useNavigate } from "react-router";
 
 export const DeviceListCard = ({ device }: { device: Device }) => {
+  const { theme } = useTheme();
+  const navigate = useNavigate();
+
   return (
     <Card
-      title={device.name.slice(15)}
-      style={{ width: "100%", marginBottom: 16, background: "#1a1a1a" }}
+      title={
+        <div style={{ color: theme.colorPrimaryText }}>
+          {device.name.slice(15)}
+        </div>
+      }
+      style={{
+        width: "100%",
+        marginBottom: 16,
+        borderColor: theme.colorFillSecondary,
+        background: theme.theme == "light" ? cardLightColor : cardDarkColor,
+      }}
       extra={[
         <Tag color={device.state == "running" ? "green" : "red"} key="status">
           {device.state}
@@ -14,7 +29,11 @@ export const DeviceListCard = ({ device }: { device: Device }) => {
         <Tag color="cyan" key="status">
           {device.status}
         </Tag>,
-        <Button key="details" type="link" href={"/devices/" + device.id}>
+        <Button
+          key="details"
+          type="link"
+          onClick={() => navigate(`/devices/${device.id}`)}
+        >
           Details
         </Button>,
         <Button key="delete" type="link" danger>
@@ -22,7 +41,7 @@ export const DeviceListCard = ({ device }: { device: Device }) => {
         </Button>,
       ]}
     >
-      <Flex dir="row">
+      <Flex style={{ color: theme.colorPrimaryText }}>
         <div style={{ marginRight: 18 }}>
           <RouterSVG />
         </div>

@@ -1,0 +1,16 @@
+.sider {
+    overflow: auto;
+    height: 100vh;
+    position: sticky;
+    inset-inline-start: 0;
+    top: 0;
+    bottom: 0;
+    scrollbar-width: thin;
+    scrollbar-gutter: stable;
+    padding-top: 10px;
+    border-right: 1px solid;
+    border-left: none;
+    border-bottom: none;
+    border-top: none;
+
+}
