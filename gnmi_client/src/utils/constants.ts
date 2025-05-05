@@ -64,3 +64,18 @@ export const visConfig = {
     selectable: true,
   },
 };
+
+export const breadcrumbsMap: Record<string, BreadChild> = {
+  devices: {
+    title: "Список устройств",
+    childTitle: "Устройство",
+    link: "/devices",
+  },
+  graph: { title: "Топология", childTitle: null, link: "/graph" },
+};
+
+interface BreadChild {
+  title: string;
+  childTitle: string | null;
+  link: string;
+}

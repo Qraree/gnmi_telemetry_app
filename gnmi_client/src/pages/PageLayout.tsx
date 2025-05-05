@@ -1,5 +1,7 @@
 import React from "react";
 import { useTheme } from "../hooks/useTheme.tsx";
+import { Breadcrumb } from "antd";
+import { useBreads } from "../hooks/useBreads.tsx";
 
 interface IProps {
   title: string;
@@ -8,6 +10,7 @@ interface IProps {
 
 export const LayoutPage = ({ title, children }: IProps) => {
   const { theme } = useTheme();
+  const breads = useBreads();
 
   return (
     <div>
@@ -19,6 +22,7 @@ export const LayoutPage = ({ title, children }: IProps) => {
           color: theme.colorPrimaryText,
         }}
       >
+        <Breadcrumb items={breads}></Breadcrumb>
         <div style={{ margin: "0 auto", maxWidth: "100%" }}>
           <h1
             style={{

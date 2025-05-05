@@ -2,7 +2,11 @@ import { Device } from "../types/device.ts";
 import { Button, Card, Flex, Tag } from "antd";
 import { RouterSVG } from "../assets/RouterSVG.tsx";
 import { useTheme } from "../hooks/useTheme.tsx";
-import { cardDarkColor, cardLightColor } from "../utils/constants.ts";
+import {
+  cardDarkColor,
+  cardLightColor,
+  ThemeColor,
+} from "../utils/constants.ts";
 import { useNavigate } from "react-router";
 
 export const DeviceListCard = ({ device }: { device: Device }) => {
@@ -20,7 +24,8 @@ export const DeviceListCard = ({ device }: { device: Device }) => {
         width: "100%",
         marginBottom: 16,
         borderColor: theme.colorFillSecondary,
-        background: theme.theme == "light" ? cardLightColor : cardDarkColor,
+        background:
+          theme.theme == ThemeColor.light ? cardLightColor : cardDarkColor,
       }}
       extra={[
         <Tag color={device.state == "running" ? "green" : "red"} key="status">
