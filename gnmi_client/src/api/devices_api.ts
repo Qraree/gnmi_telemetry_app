@@ -6,10 +6,10 @@ export const getDeviceSpecs = async (id: number): Promise<Device> => {
   return await response.json();
 };
 
-export const getDeviceYang = async (
+export const getDeviceYang = async <T>(
   id: number,
   path: string[],
-): Promise<Device> => {
+): Promise<T> => {
   const baseUrl = import.meta.env.VITE_SERVER_URL;
   const response = await fetch(`${baseUrl}/yang`, {
     method: "POST",

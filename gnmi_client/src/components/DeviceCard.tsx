@@ -4,7 +4,8 @@ import { LayoutPage } from "../pages/PageLayout.tsx";
 import { useParams } from "react-router";
 import { useEffect } from "react";
 import { Tabs, TabsProps } from "antd";
-import { DeviceInfo } from "./Device/DeviceInfo.tsx";
+import { DeviceTab } from "./Device/DeviceTab.tsx";
+import { YangTab } from "./Device/YangTab.tsx";
 
 export const DeviceCard = () => {
   const { device } = useParams();
@@ -15,7 +16,7 @@ export const DeviceCard = () => {
   });
 
   const { data: specs } = useQuery({
-    queryKey: ["device_specs"],
+    queryKey: ["device_interfaces"],
     queryFn: () => getDeviceYang(Number(device), ["/interfaces"]),
   });
 
@@ -35,12 +36,12 @@ export const DeviceCard = () => {
     {
       key: "1",
       label: "Информация",
-      children: <DeviceInfo />,
+      children: <DeviceTab />,
     },
     {
       key: "2",
       label: "YANG",
-      children: "Content of Tab Pane 2",
+      children: <YangTab />,
     },
   ];
 
