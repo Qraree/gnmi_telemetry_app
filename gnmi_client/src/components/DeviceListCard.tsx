@@ -39,10 +39,10 @@ export const DeviceListCard = ({ device }: { device: Device }) => {
           type="link"
           onClick={() => navigate(`/devices/${device.id}`)}
         >
-          Details
+          Информация
         </Button>,
         <Button key="delete" type="link" danger>
-          Turn off
+          Выключить
         </Button>,
       ]}
     >

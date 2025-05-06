@@ -81,7 +81,7 @@ export const GraphPage = () => {
   }, [visJsRef, visNodes, visEdges]);
 
   return (
-    <LayoutPage title="Network Devices Graph">
+    <LayoutPage title="Топология">
       <div
         style={{
           height: "100vh",

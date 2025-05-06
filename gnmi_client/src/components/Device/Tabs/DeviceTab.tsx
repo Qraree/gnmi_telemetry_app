@@ -1,9 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
-import { getOneDevice } from "../../api/devices_api.ts";
-import { useParams } from "react-router";
 import { Descriptions, DescriptionsProps, Typography } from "antd";
+import { useParams } from "react-router";
+import { useQuery } from "@tanstack/react-query";
+import { getOneDevice } from "../../../api/devices_api.ts";
 
-export const DeviceInfo = () => {
+export const DeviceTab = () => {
   const { device } = useParams();
 
   const { data, isPending } = useQuery({

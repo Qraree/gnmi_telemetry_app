@@ -1,45 +1,59 @@
+import { useQuery } from "@tanstack/react-query";
+import { getDeviceYang, getOneDevice } from "../api/devices_api.ts";
 import { LayoutPage } from "./PageLayout.tsx";
-import DeviceList from "../components/DeviceList.tsx";
-import { Button, Col, Input, Row } from "antd";
-import { useMutation } from "@tanstack/react-query";
-import { testRPCRequest, testSSHRequest } from "../api/devices_api.ts";
-import { useTheme } from "../hooks/useTheme.tsx";
+import { useParams } from "react-router";
+import { useEffect } from "react";
+import { Tabs, TabsProps } from "antd";
+import { DeviceTab } from "../components/Device/Tabs/DeviceTab.tsx";
+import { YangTab } from "../components/Device/Tabs/YangTab.tsx";
+import { InterfaceTab } from "../components/Device/Tabs/InterfaceTab.tsx";
 
 export const DevicePage = () => {
-  const testRequest = useMutation({
-    mutationFn: testRPCRequest,
+  const { device } = useParams();
+
+  const { data, isPending } = useQuery({
+    queryKey: ["device"],
+    queryFn: () => getOneDevice(Number(device)),
   });
 
-  const testSshRequest = useMutation({
-    mutationFn: testSSHRequest,
+  const { data: specs } = useQuery({
+    queryKey: ["device_interfaces"],
+    queryFn: () => getDeviceYang(Number(device), ["/interfaces"]),
   });
 
-  const { theme } = useTheme();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
+    console.log(specs);
+  }, [specs]);
+
+  if (isPending || !data) {
+    return <div>Loading...</div>;
+  }
+
+  const items: TabsProps["items"] = [
+    {
+      key: "1",
+      label: "Информация",
+      children: <DeviceTab />,
+    },
+    {
+      key: "2",
+      label: "Интерфейсы",
+      children: <InterfaceTab />,
+    },
+    {
+      key: "3",
+      label: "YANG",
+      children: <YangTab />,
+    },
+  ];
 
   return (
-    <LayoutPage title="Network Devices">
-      <Row gutter={[16, 16]} style={{ marginBottom: "32px" }}>
-        <Col span={12}>
-          <Input
-            placeholder="Search devices..."
-            style={{
-              width: "100%",
-              background: theme.colorFillSecondary,
-              color: theme.colorPrimaryText,
-            }}
-          />
-        </Col>
-        <Col span={12} style={{ textAlign: "right" }}>
-          <Button type="default" onClick={() => testRequest.mutate()}>
-            + Add Device
-          </Button>
-          <Button type="default" onClick={() => testSshRequest.mutate()}>
-            test ssh
-          </Button>
-        </Col>
-      </Row>
-
-      <DeviceList />
+    <LayoutPage title={data.name.slice(15)}>
+      <Tabs defaultActiveKey="1" items={items} />
     </LayoutPage>
   );
 };
