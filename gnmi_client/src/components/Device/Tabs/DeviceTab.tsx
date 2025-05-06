@@ -1,7 +1,8 @@
 import { Descriptions, DescriptionsProps, Typography } from "antd";
 import { useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
-import { getOneDevice } from "../../../api/devices_api.ts";
+import { getDeviceYang, getOneDevice } from "../../../api/devices_api.ts";
+import { OpenConfigInterface, YangBase } from "../../../types/yang.ts";
 
 export const DeviceTab = () => {
   const { device } = useParams();
@@ -10,6 +11,14 @@ export const DeviceTab = () => {
     queryKey: ["device"],
     queryFn: () => getOneDevice(Number(device)),
   });
+
+  const { data: systemData } = useQuery({
+    queryKey: ["system"],
+    queryFn: () =>
+      getDeviceYang<YangBase<OpenConfigInterface>>(Number(device), ["/system"]),
+  });
+
+  console.log(systemData);
 
   if (isPending || !data) {
     return <div>Loading...</div>;
