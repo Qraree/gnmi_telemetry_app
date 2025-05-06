@@ -1,6 +1,7 @@
 import { FaCircle } from "react-icons/fa6";
 import { Button, Card, Descriptions, Tag } from "antd";
 import { OpenConfigInterfaceItem } from "../../../types/yang";
+import { NanoTimestamp } from "../NanoTimeStamp.tsx";
 
 interface IProps {
   interfaceItem: OpenConfigInterfaceItem;
@@ -37,7 +38,7 @@ export const InterfaceCard = ({ interfaceItem }: IProps) => {
           {state["openconfig-platform-transceiver:transceiver"]}
         </Descriptions.Item>
         <Descriptions.Item label="Последнее изменение">
-          {state["last-change"]}
+          <NanoTimestamp ns={state["last-change"]} />
         </Descriptions.Item>
         <Descriptions.Item label="Оперативный статус">
           <Tag color={state["oper-status"] === "UP" ? "green" : "red"}>
