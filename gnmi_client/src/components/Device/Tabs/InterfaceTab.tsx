@@ -39,10 +39,11 @@ export const InterfaceTab = () => {
           }}
         >
           {data?.notification &&
+            device &&
             data?.notification[0]?.update[0]?.val[
               "openconfig-interfaces:interface"
             ].map((interfaceItem) => (
-              <InterfaceCard interfaceItem={interfaceItem} />
+              <InterfaceCard interfaceItem={interfaceItem} device={device} />
             ))}
         </Flex>
         <Anchor

@@ -5,7 +5,7 @@ from sqlmodel import Session, select
 from core.config import settings
 from core.database import engine
 from core.types.logging import logger
-from core.types.yang import GetYangBody
+from core.types.yang import GetYangBody, SetInterfaceState
 from models.Device import Device, Connection
 
 device_router = APIRouter()
@@ -45,6 +45,45 @@ def get_one_device_specs(device_id: int):
                 target=host, username="admin", password="admin", insecure=True
             ) as gc:
                 result = gc.get(path=["system"])
+                print(result)
+                return result
+
+    except Exception as e:
+        logger.error(e)
+        return {"error": str(e)}
+
+
+@device_router.post("/devices/interface/state")
+def get_one_device_specs(state: SetInterfaceState):
+    try:
+        with Session(engine) as session:
+            device = session.get(Device, state.device_id)
+
+            if not device:
+                raise HTTPException(status_code=404, detail="Device not found")
+
+            if not device.type == "network":
+                raise HTTPException(status_code=400, detail="Device type not supported")
+
+            target_port = device.container_host_port
+            host = (settings.lab_server, target_port)
+
+            u = [
+                (
+                    f"openconfig:/interfaces/interface[name={state.name}]/",
+                    {
+                        "config": {
+                            "name": f"{state.name}",
+                            "enabled": state.state,
+                        }
+                    },
+                )
+            ]
+
+            with gNMIclient(
+                target=host, username="admin", password="admin", insecure=True
+            ) as gc:
+                result = gc.set(update=u)
                 print(result)
                 return result
 

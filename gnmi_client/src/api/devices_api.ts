@@ -6,6 +6,22 @@ export const getDeviceSpecs = async (id: number): Promise<Device> => {
   return await response.json();
 };
 
+export const setInterfaceState = async (
+  id: number,
+  interfaceName: string,
+  state: boolean,
+): Promise<Device> => {
+  const baseUrl = import.meta.env.VITE_SERVER_URL;
+  const response = await fetch(`${baseUrl}/devices/interface/state`, {
+    method: "POST",
+    body: JSON.stringify({ state, name: interfaceName, device_id: id }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return await response.json();
+};
+
 export const getDeviceYang = async <T>(
   id: number,
   path: string[],

@@ -2,14 +2,28 @@ import { FaCircle } from "react-icons/fa6";
 import { Button, Card, Descriptions, Tag } from "antd";
 import { OpenConfigInterfaceItem } from "../../../types/yang";
 import { NanoTimestamp } from "../NanoTimeStamp.tsx";
+import { useMutation } from "@tanstack/react-query";
+import { setInterfaceState } from "../../../api/devices_api.ts";
 
 interface IProps {
   interfaceItem: OpenConfigInterfaceItem;
+  device: number | string;
 }
 
-export const InterfaceCard = ({ interfaceItem }: IProps) => {
+export const InterfaceCard = ({ interfaceItem, device }: IProps) => {
   const { state, config, subinterfaces } = interfaceItem;
-  const statusColor = state["admin-status"] === "UP" ? "#4dec34" : "red";
+  const isInterfaceUp = state["admin-status"] === "UP";
+  const statusColor = isInterfaceUp ? "#4dec34" : "red";
+
+  const testRequest = useMutation({
+    mutationFn: ({
+      interfaceName,
+      newState,
+    }: {
+      interfaceName: string;
+      newState: boolean;
+    }) => setInterfaceState(Number(device), interfaceName, newState),
+  });
 
   return (
     <Card
@@ -20,8 +34,17 @@ export const InterfaceCard = ({ interfaceItem }: IProps) => {
         </span>
       }
       extra={[
-        <Button key="delete" danger>
-          Выключить
+        <Button
+          key="delete"
+          danger={isInterfaceUp}
+          onClick={() =>
+            testRequest.mutate({
+              interfaceName: interfaceItem.name,
+              newState: !isInterfaceUp,
+            })
+          }
+        >
+          {isInterfaceUp ? "Выключить" : "Включить"}
         </Button>,
       ]}
       style={{ width: "100%", marginBottom: 10 }}
@@ -68,10 +91,10 @@ export const InterfaceCard = ({ interfaceItem }: IProps) => {
                     style={{ marginBottom: 10 }}
                   >
                     <Descriptions.Item label="IP">
-                      {addr.state.ip}/{addr.state["prefix-length"]}
+                      {addr.state?.ip}/{addr?.state?.["prefix-length"]}
                     </Descriptions.Item>
                     <Descriptions.Item label="Origin">
-                      {addr.state.origin}
+                      {addr.state?.origin}
                     </Descriptions.Item>
                   </Descriptions>
                 ),
@@ -97,7 +120,7 @@ export const InterfaceCard = ({ interfaceItem }: IProps) => {
                           {nbr.state["link-layer-address"]}
                         </Descriptions.Item>
                         <Descriptions.Item label="Origin">
-                          {nbr.state.origin}
+                          {nbr.state?.origin}
                         </Descriptions.Item>
                       </Descriptions>
                     ),
