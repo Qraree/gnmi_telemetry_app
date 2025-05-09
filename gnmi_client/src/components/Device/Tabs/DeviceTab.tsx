@@ -2,7 +2,7 @@ import { Descriptions, DescriptionsProps, Typography } from "antd";
 import { useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { getDeviceYang, getOneDevice } from "../../../api/devices_api.ts";
-import { OpenConfigInterface, YangBase } from "../../../types/yang.ts";
+import { OpenConfigInterface } from "../../../types/yang.ts";
 
 export const DeviceTab = () => {
   const { device } = useParams();
@@ -15,7 +15,7 @@ export const DeviceTab = () => {
   const { data: systemData } = useQuery({
     queryKey: ["system"],
     queryFn: () =>
-      getDeviceYang<YangBase<OpenConfigInterface>>(Number(device), ["/system"]),
+      getDeviceYang<OpenConfigInterface>(Number(device), ["/system"]),
   });
 
   console.log(systemData);
@@ -33,7 +33,7 @@ export const DeviceTab = () => {
     {
       key: "2",
       label: "MAC-адрес",
-      children: "462374-fwe3-432-few2",
+      children: "8a:39:2d:6e:e2:ef",
     },
     {
       key: "3",

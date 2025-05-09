@@ -1,4 +1,5 @@
 import { Device } from "../types/device.ts";
+import { YangBase } from "../types/yang.ts";
 
 export const getDeviceSpecs = async (id: number): Promise<Device> => {
   const baseUrl = import.meta.env.VITE_SERVER_URL;
@@ -25,7 +26,7 @@ export const setInterfaceState = async (
 export const getDeviceYang = async <T>(
   id: number,
   path: string[],
-): Promise<T> => {
+): Promise<YangBase<T>> => {
   const baseUrl = import.meta.env.VITE_SERVER_URL;
   const response = await fetch(`${baseUrl}/yang`, {
     method: "POST",

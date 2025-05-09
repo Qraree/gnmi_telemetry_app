@@ -42,7 +42,7 @@ function App() {
           }}
         >
           <BrowserRouter>
-            <ThemeContext.Provider value={{ theme, setTheme }}>
+            <ThemeContext value={{ theme, setTheme }}>
               <Routes>
                 <Route path="/" element={<MainPage />}>
                   <Route path="/devices" element={<DeviceListPage />} />
@@ -50,7 +50,7 @@ function App() {
                   <Route path="/graph" element={<GraphPage />} />
                 </Route>
               </Routes>
-            </ThemeContext.Provider>
+            </ThemeContext>
           </BrowserRouter>
         </ConfigProvider>
       </QueryClientProvider>

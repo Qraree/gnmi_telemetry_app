@@ -1,0 +1,43 @@
+.editor {
+    margin-right: 30px;
+    margin-left: 30px;
+    overflow: scroll;
+    border: 1px solid gainsboro;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.diffEditor {
+    margin-bottom: 10px;
+}
+
+.fade-enter {
+    opacity: 0;
+    transform: translateY(10px);
+}
+.fade-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 300ms, transform 300ms;
+}
+.fade-exit {
+    opacity: 1;
+}
+.fade-exit-active {
+    opacity: 0;
+    transition: opacity 200ms;
+}
+
+.fadeBlock {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 300ms ease, transform 300ms ease;
+}
+
+.fadeBlockHidden {
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+    height: 0;
+    overflow: hidden;
+}

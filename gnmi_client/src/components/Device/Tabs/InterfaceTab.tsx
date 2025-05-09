@@ -3,7 +3,7 @@ import { InterfaceCard } from "../Interface/InterfaceCard.tsx";
 import { useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { getDeviceYang } from "../../../api/devices_api.ts";
-import { OpenConfigInterface, YangBase } from "../../../types/yang.ts";
+import { OpenConfigInterface } from "../../../types/yang.ts";
 
 export const InterfaceTab = () => {
   const { device, error } = useParams();
@@ -11,9 +11,7 @@ export const InterfaceTab = () => {
   const { data, isPending } = useQuery({
     queryKey: ["device_interfaces"],
     queryFn: () =>
-      getDeviceYang<YangBase<OpenConfigInterface>>(Number(device), [
-        "/interfaces",
-      ]),
+      getDeviceYang<OpenConfigInterface>(Number(device), ["/interfaces"]),
   });
 
   if (error) {
@@ -43,7 +41,11 @@ export const InterfaceTab = () => {
             data?.notification[0]?.update[0]?.val[
               "openconfig-interfaces:interface"
             ].map((interfaceItem) => (
-              <InterfaceCard interfaceItem={interfaceItem} device={device} />
+              <InterfaceCard
+                interfaceItem={interfaceItem}
+                device={device}
+                key={interfaceItem.name}
+              />
             ))}
         </Flex>
         <Anchor

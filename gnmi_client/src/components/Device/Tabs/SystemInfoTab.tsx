@@ -1,5 +1,5 @@
 import { Card, Divider, Typography, Tabs, Space } from "antd";
-import { OpenConfigInterface, YangBase } from "../../../types/yang.ts";
+import { OpenConfigInterface } from "../../../types/yang.ts";
 import { useQuery } from "@tanstack/react-query";
 import { getDeviceYang } from "../../../api/devices_api.ts";
 import { useParams } from "react-router";
@@ -12,7 +12,7 @@ export const SystemInfoTab = () => {
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["system"],
     queryFn: () =>
-      getDeviceYang<YangBase<OpenConfigInterface>>(Number(device), ["/system"]),
+      getDeviceYang<OpenConfigInterface>(Number(device), ["/system"]),
   });
 
   if (isLoading) return <Text>Loading...</Text>;
