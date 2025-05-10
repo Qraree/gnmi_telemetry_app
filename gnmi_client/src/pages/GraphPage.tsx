@@ -37,9 +37,9 @@ export const GraphPage = () => {
     if (devices && connections) {
       const nodes = devices.map((d: Device) => ({
         id: d.id,
-        label: d.name.slice(15),
+        label: d.name,
         title: `IP: ${d.container_ipv4_address || "—"}`,
-        image: "/router.svg",
+        image: d.type == "network" ? "/router.svg" : "/pc.svg",
         shape: "image",
         font: { color: "#a59898" },
       }));
@@ -49,7 +49,7 @@ export const GraphPage = () => {
         to: c.device2_id,
         label: `${c.port1} ↔ ${c.port2}`,
         title: c.cable || "",
-        length: 200,
+        length: 300,
       }));
 
       setVisNodes(nodes);

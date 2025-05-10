@@ -49,7 +49,7 @@ export const DevicePage = () => {
   ];
 
   return (
-    <LayoutPage title={data.name.slice(15)}>
+    <LayoutPage title={data.name}>
       <Tabs defaultActiveKey="1" items={items} />
     </LayoutPage>
   );

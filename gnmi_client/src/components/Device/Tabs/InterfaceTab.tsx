@@ -19,7 +19,11 @@ export const InterfaceTab = () => {
   }
 
   if (isPending && !data) {
-    return <Spin />;
+    return (
+      <Flex justify="center" align="center" style={{ height: "80vh" }}>
+        <Spin size={"large"} />
+      </Flex>
+    );
   }
 
   return (

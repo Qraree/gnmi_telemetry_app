@@ -1,4 +1,4 @@
-import { Card, Divider, Typography, Tabs, Space } from "antd";
+import { Card, Divider, Typography, Tabs, Space, Spin, Flex } from "antd";
 import { OpenConfigInterface } from "../../../types/yang.ts";
 import { useQuery } from "@tanstack/react-query";
 import { getDeviceYang } from "../../../api/devices_api.ts";
@@ -13,13 +13,21 @@ export const SystemInfoTab = () => {
     queryKey: ["system"],
     queryFn: () =>
       getDeviceYang<OpenConfigInterface>(Number(device), ["/system"]),
+
+    retry: false,
   });
 
-  if (isLoading) return <Text>Loading...</Text>;
+  if (isLoading)
+    return (
+      <Flex justify="center" align="center" style={{ height: "80vh" }}>
+        <Spin size="large" />
+      </Flex>
+    );
+
   if (isError)
     return <Text type="danger">Ошибка загрузки данных: {String(error)}</Text>;
 
-  const systemData = data?.notification[0].update[0].val;
+  const systemData = data?.notification?.[0]?.update?.[0]?.val;
   const keys = systemData ? Object.keys(systemData) : [];
 
   const tabItems = keys.map((key, index) => {

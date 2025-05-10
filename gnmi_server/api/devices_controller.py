@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pygnmi.client import gNMIclient
 from sqlmodel import Session, select
+from starlette.responses import JSONResponse
 
 from core.config import settings
 from core.database import engine
@@ -139,4 +140,7 @@ def get_yang(body: GetYangBody):
 
     except Exception as e:
         logger.error(e)
-        return {"error": str(e)}
+        return JSONResponse(
+            status_code=400,
+            content={"message": f"Ошибка запроса! {e}"},
+        )

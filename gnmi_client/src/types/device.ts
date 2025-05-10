@@ -9,6 +9,7 @@ export interface Device {
   short_id: string;
   state: string;
   status: string;
+  type: string;
 }
 
 export interface Connection {

@@ -1,4 +1,4 @@
-import { Descriptions, DescriptionsProps, Typography } from "antd";
+import { Descriptions, DescriptionsProps, Tag, Typography } from "antd";
 import { useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { getDeviceYang, getOneDevice } from "../../../api/devices_api.ts";
@@ -44,11 +44,9 @@ export const DeviceTab = () => {
       key: "4",
       label: "Состояние",
       children: (
-        <p
-          className={`font-medium ${data?.state === "running" ? "text-green-600" : "text-red-600"}`}
-        >
+        <Tag color={data?.state === "running" ? "green" : "red"}>
           {data?.state}
-        </p>
+        </Tag>
       ),
     },
   ];
@@ -56,6 +54,7 @@ export const DeviceTab = () => {
   return (
     <Descriptions
       layout="vertical"
+      column={2}
       title={<Typography.Title level={3}>Система</Typography.Title>}
       items={items}
     />

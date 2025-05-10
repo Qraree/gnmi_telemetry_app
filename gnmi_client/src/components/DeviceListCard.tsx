@@ -15,11 +15,7 @@ export const DeviceListCard = ({ device }: { device: Device }) => {
 
   return (
     <Card
-      title={
-        <div style={{ color: theme.colorPrimaryText }}>
-          {device.name.slice(15)}
-        </div>
-      }
+      title={<div style={{ color: theme.colorPrimaryText }}>{device.name}</div>}
       style={{
         width: "100%",
         marginBottom: 16,

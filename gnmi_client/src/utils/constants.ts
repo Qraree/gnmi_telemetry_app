@@ -54,11 +54,10 @@ export const visConfig = {
     improvedLayout: true,
   },
   autoResize: true,
-  // edges: {
-  //   color: "#efe9e9",
-  // },
+  physics: false,
   edges: {
     color: "#bfbcbc",
+    smooth: false,
   },
   interaction: {
     selectable: true,
