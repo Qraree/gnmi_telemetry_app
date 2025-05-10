@@ -21,7 +21,7 @@ export const useConvertJsonToTree = (
 
   function converter(obj: any, parentKey = ""): TreeDataNode[] {
     return Object.entries(obj).flatMap(([key, value]): TreeDataNode[] => {
-      const nodeKey = parentKey ? `${parentKey}.${key}` : key;
+      const nodeKey = parentKey ? `${parentKey}/${key}` : key;
 
       if (Array.isArray(value)) {
         const objectItems = value.filter(
@@ -29,19 +29,31 @@ export const useConvertJsonToTree = (
         );
 
         if (objectItems.length === 0) {
-          return []; // массив примитивов — не отображаем
+          return [];
         }
 
         return [
           {
             title: (
-              <span onClick={() => handleTreeToJson(objectItems)}>{key}</span>
+              <span
+                onClick={() => {
+                  console.log(nodeKey);
+                  handleTreeToJson(objectItems);
+                }}
+              >
+                {key}
+              </span>
             ),
             key: nodeKey,
             children: objectItems.map(
               (item, index): TreeDataNode => ({
                 title: (
-                  <span onClick={() => handleTreeToJson(objectItems[index])}>
+                  <span
+                    onClick={() => {
+                      console.log(nodeKey);
+                      handleTreeToJson(objectItems[index]);
+                    }}
+                  >
                     {String(index)}
                   </span>
                 ),

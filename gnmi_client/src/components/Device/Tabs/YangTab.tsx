@@ -75,6 +75,12 @@ export const YangTab = () => {
         <Flex style={{ width: "100%", height: "85%" }}>
           <Flex vertical>
             <Select
+              showSearch
+              filterOption={(input, option) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
               defaultValue={openconfigModules[0]}
               style={{ width: 400, marginBottom: 20 }}
               onChange={handleChange}
