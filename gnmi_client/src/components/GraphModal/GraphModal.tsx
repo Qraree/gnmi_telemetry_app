@@ -1,59 +1,130 @@
-import { Flex } from "antd";
+import { Flex, Modal, Skeleton, Tag, Typography } from "antd";
 import { VisEdge } from "../../types/device.ts";
-import React from "react";
-import { IoCloseOutline } from "react-icons/io5";
 import { RouterSVG } from "../../assets/RouterSVG.tsx";
-import styles from "./GraphModal.module.css";
 import { useTheme } from "../../hooks/useTheme.tsx";
+import { useQuery } from "@tanstack/react-query";
+import { getDeviceYang } from "../../api/devices_api.ts";
+import { OpenConfigInterfaceSubInterface } from "../../types/yang.ts";
+import { useEffect } from "react";
 
 interface GraphModalProps {
-  isModalVisible: boolean;
+  open: boolean;
+  onOk: () => void;
   selectedEdge: VisEdge | null;
-  setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  onCancel: () => void;
 }
 
 export const GraphModal = ({
-  isModalVisible,
-  setModalVisible,
+  open,
+  onOk,
   selectedEdge,
+  onCancel,
 }: GraphModalProps) => {
   const { theme } = useTheme();
+
+  const {
+    data: firstInterface,
+    isLoading: isLoadingFirst,
+    refetch: refetchFirst,
+  } = useQuery({
+    queryKey: ["first_device_interface", selectedEdge?.from],
+    queryFn: () =>
+      getDeviceYang<OpenConfigInterfaceSubInterface>(
+        Number(selectedEdge?.from),
+        [
+          `/interfaces/interface[name=${selectedEdge?.fromPort}]/subinterfaces/subinterface[index=0]`,
+        ],
+      ),
+    enabled: !!selectedEdge?.from,
+  });
+
+  const {
+    data: secondInterface,
+    isLoading: isLoadingSecond,
+    refetch: refetchSecond,
+  } = useQuery({
+    queryKey: ["second_device_interface", selectedEdge?.to],
+    queryFn: () =>
+      getDeviceYang<OpenConfigInterfaceSubInterface>(Number(selectedEdge?.to), [
+        `/interfaces/interface[name=${selectedEdge?.toPort}]/subinterfaces/subinterface[index=0]`,
+      ]),
+    enabled: !!selectedEdge?.to,
+  });
+
+  useEffect(() => {
+    if (selectedEdge) {
+      refetchFirst();
+      refetchSecond();
+    }
+  }, [selectedEdge]);
+
+  const renderInterfaceInfo = (
+    iface: OpenConfigInterfaceSubInterface | undefined,
+    loading: boolean,
+    label: string,
+  ) => (
+    <Flex vertical align="center" style={{ height: 200 }}>
+      <RouterSVG />
+      <Typography.Text strong>{label}</Typography.Text>
+      {loading ? (
+        <Skeleton paragraph={{ rows: 3 }} active />
+      ) : iface ? (
+        <Flex vertical align="center" gap={6}>
+          <Typography.Text>
+            {iface?.["openconfig-if-ip:ipv4"]?.addresses?.address &&
+              iface?.["openconfig-if-ip:ipv4"]?.addresses?.address?.[0]?.ip +
+                "/" +
+                iface?.["openconfig-if-ip:ipv4"]?.addresses?.address?.[0]
+                  ?.config?.["prefix-length"]}
+          </Typography.Text>
+          <Tag
+            style={{ margin: "0 auto" }}
+            color={
+              iface?.["openconfig-if-ip:ipv4"]?.state?.enabled ? "green" : "red"
+            }
+          >
+            {iface?.["openconfig-if-ip:ipv4"]?.state?.enabled
+              ? "Активен"
+              : "Выключен"}
+          </Tag>
+        </Flex>
+      ) : (
+        <Typography.Text type="secondary">Нет данных</Typography.Text>
+      )}
+    </Flex>
+  );
+
   return (
-    <div
-      className={styles.modal}
-      style={{
-        background: theme.colorFillSecondary,
-        transform: isModalVisible ? "translateX(0)" : "translateX(100%)",
-        boxShadow: isModalVisible ? "-4px 0 10px rgba(0,0,0,0.2)" : "none",
-      }}
+    <Modal
+      width="50%"
+      title="Информация о соединении"
+      open={open}
+      onOk={onOk}
+      onCancel={onCancel}
+      destroyOnClose
     >
-      <Flex justify="space-between" style={{ width: "100%" }}>
-        <div>{selectedEdge?.label}</div>
-        <IoCloseOutline
-          onClick={() => setModalVisible(false)}
-          style={{ cursor: "pointer", fontSize: 24 }}
-        />
-      </Flex>
       <div style={{ padding: 20 }}>
-        <Flex justify={"space-around"}>
-          <Flex vertical align="center" style={{ height: 200 }}>
-            <RouterSVG />
-            <div>{selectedEdge?.label}</div>
-          </Flex>
+        <Flex justify="space-around" align="center">
+          {renderInterfaceInfo(
+            firstInterface?.notification[0].update[0].val,
+            isLoadingFirst,
+            selectedEdge?.fromPort || "—",
+          )}
           <div
             style={{
               background: theme.colorPrimaryText,
               width: "60%",
-              height: "1px",
+              height: 1,
               marginTop: 25,
             }}
-          ></div>
-          <Flex vertical align="center" style={{ height: 200 }}>
-            <RouterSVG />
-            <p>{selectedEdge?.label}</p>
-          </Flex>
+          />
+          {renderInterfaceInfo(
+            secondInterface?.notification?.[0]?.update?.[0]?.val,
+            isLoadingSecond,
+            selectedEdge?.toPort || "—",
+          )}
         </Flex>
       </div>
-    </div>
+    </Modal>
   );
 };

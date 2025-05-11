@@ -6,7 +6,7 @@ from starlette.responses import JSONResponse
 from core.config import settings
 from core.database import engine
 from core.types.logging import logger
-from core.types.yang import GetYangBody, SetInterfaceState
+from core.types.yang import GetYangBody, SetInterfaceState, SetInterfaceIp
 from models.Device import Device, Connection
 
 device_router = APIRouter()
@@ -85,6 +85,50 @@ def get_one_device_specs(state: SetInterfaceState):
                 target=host, username="admin", password="admin", insecure=True
             ) as gc:
                 result = gc.set(update=u)
+                print(result)
+                return result
+
+    except Exception as e:
+        logger.error(e)
+        return {"error": str(e)}
+
+
+@device_router.post("/devices/interface/ip")
+def set_interface_ip(state: SetInterfaceIp):
+    try:
+        with Session(engine) as session:
+            device = session.get(Device, state.device_id)
+
+            if not device:
+                raise HTTPException(status_code=404, detail="Device not found")
+
+            if not device.type == "network":
+                raise HTTPException(status_code=400, detail="Device type not supported")
+
+            target_port = device.container_host_port
+            host = (settings.lab_server, target_port)
+
+            u = [
+                (
+                    f"/interfaces/interface[name={state.interface_name}]/subinterfaces/subinterface[index={state.index}]/ipv4/addresses/",
+                    {
+                        "address": [
+                            {
+                                "ip": state.ip,
+                                "config": {
+                                    "ip": state.ip,
+                                    "prefix-length": state.prefix_length,
+                                },
+                            },
+                        ],
+                    },
+                )
+            ]
+
+            with gNMIclient(
+                target=host, username="admin", password="admin", insecure=True
+            ) as gc:
+                result = gc.set(replace=u)
                 print(result)
                 return result
 

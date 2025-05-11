@@ -1,9 +1,22 @@
 import { FaCircle } from "react-icons/fa6";
-import { Button, Card, Descriptions, notification, Tag } from "antd";
+import {
+  Button,
+  Card,
+  Descriptions,
+  Flex,
+  Form,
+  Input,
+  Modal,
+  notification,
+  Select,
+  Tag,
+} from "antd";
 import { OpenConfigInterfaceItem } from "../../../types/yang";
 import { NanoTimestamp } from "../NanoTimeStamp.tsx";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { setInterfaceState } from "../../../api/devices_api.ts";
+import { setInterfaceIP, setInterfaceState } from "../../../api/devices_api.ts";
+import { useState } from "react";
+import { cidrMaskRegex, ipv4Regex } from "../../../utils/constants.ts";
 
 interface IProps {
   interfaceItem: OpenConfigInterfaceItem;
@@ -15,9 +28,13 @@ type NotificationType = "success" | "info" | "warning" | "error";
 export const InterfaceCard = ({ interfaceItem, device }: IProps) => {
   const [api, contextHolder] = notification.useNotification();
   const queryClient = useQueryClient();
+  const [form] = Form.useForm();
   const { state, config, subinterfaces } = interfaceItem;
   const isInterfaceUp = state["admin-status"] === "UP";
   const statusColor = isInterfaceUp ? "#4dec34" : "red";
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
+
+  const [isModelOpen, setIsModelOpen] = useState<boolean>(false);
 
   const openNotificationWithIcon = (
     type: NotificationType,
@@ -30,7 +47,7 @@ export const InterfaceCard = ({ interfaceItem, device }: IProps) => {
     });
   };
 
-  const testRequest = useMutation({
+  const changeInterfaceState = useMutation({
     mutationFn: ({
       interfaceName,
       newState,
@@ -49,6 +66,60 @@ export const InterfaceCard = ({ interfaceItem, device }: IProps) => {
       ),
   });
 
+  const changeInterfaceIp = useMutation({
+    mutationFn: ({
+      deviceId,
+      interfaceName,
+      index,
+      ip,
+      prefixLength,
+    }: {
+      deviceId: number;
+      interfaceName: string;
+      index: number;
+      ip: string;
+      prefixLength: number;
+    }) => setInterfaceIP(deviceId, interfaceName, index, ip, prefixLength),
+    onSettled: () => {
+      setIsModelOpen(false);
+      queryClient.refetchQueries({ queryKey: ["device_interfaces"] });
+    },
+    onSuccess: () => openNotificationWithIcon("success"),
+    onError: () =>
+      openNotificationWithIcon("error", "Ошибка", "IP интерфейса не изменен"),
+  });
+
+  const openModel = () => {
+    setIsModelOpen(true);
+  };
+
+  const cancelModal = () => {
+    setIsModelOpen(false);
+  };
+
+  const onFinish = (values: any) => {
+    const { ip, prefixLength } = values;
+
+    changeInterfaceIp.mutate({
+      deviceId: Number(device),
+      interfaceName: interfaceItem.name,
+      ip,
+      prefixLength,
+      index: selectedIndex,
+    });
+  };
+
+  const handleSelectSub = (index: number) => {
+    setSelectedIndex(index);
+    form.setFieldsValue({
+      ip: subinterfaces.subinterface?.[selectedIndex]?.["openconfig-if-ip:ipv4"]
+        ?.addresses?.address?.[0]?.ip,
+      prefixLength:
+        subinterfaces.subinterface?.[selectedIndex]?.["openconfig-if-ip:ipv4"]
+          ?.addresses?.address?.[0]?.config["prefix-length"],
+    });
+  };
+
   return (
     <>
       {contextHolder}
@@ -60,12 +131,15 @@ export const InterfaceCard = ({ interfaceItem, device }: IProps) => {
           </span>
         }
         extra={[
+          <Button type="link" onClick={openModel} style={{ marginRight: 10 }}>
+            Редактировать
+          </Button>,
           <Button
             key="delete"
-            loading={testRequest.isPending}
+            loading={changeInterfaceState.isPending}
             danger={isInterfaceUp}
             onClick={() =>
-              testRequest.mutate({
+              changeInterfaceState.mutate({
                 interfaceName: interfaceItem.name,
                 newState: !isInterfaceUp,
               })
@@ -100,18 +174,18 @@ export const InterfaceCard = ({ interfaceItem, device }: IProps) => {
         {subinterfaces?.subinterface?.length > 0 && (
           <>
             <h4 style={{ marginTop: 16 }}>Подинтерфейсы</h4>
-            {subinterfaces.subinterface.map((sub, index) => (
+            {subinterfaces.subinterface.map((sub) => (
               <Card
-                key={index}
+                key={sub.index}
                 size="small"
                 type="inner"
                 title={`Subinterface ${sub.index}`}
                 style={{ marginTop: 10 }}
               >
                 {sub["openconfig-if-ip:ipv4"]?.addresses?.address?.map(
-                  (addr, i) => (
+                  (addr) => (
                     <Descriptions
-                      key={i}
+                      key={addr.ip}
                       size="small"
                       column={1}
                       bordered
@@ -159,6 +233,82 @@ export const InterfaceCard = ({ interfaceItem, device }: IProps) => {
           </>
         )}
       </Card>
+      <Modal
+        title="Изменить ip адрес"
+        open={isModelOpen}
+        onCancel={cancelModal}
+        destroyOnClose={true}
+        footer={false}
+      >
+        <Form form={form} layout="vertical" onFinish={onFinish}>
+          <Form.Item
+            style={{ marginTop: 30 }}
+            name="subinterface"
+            label="Подинтерфейс"
+            rules={[{ required: true, message: "Выберите подинтерфейс" }]}
+            initialValue={selectedIndex}
+          >
+            <Select
+              placeholder="Выберите индекс"
+              onChange={(val) => handleSelectSub(Number(val))}
+              options={subinterfaces.subinterface.map((s) => ({
+                label: `Subinterface ${s.index}`,
+                value: s.index,
+              }))}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="ip"
+            label="Новый IP-адрес"
+            initialValue={
+              subinterfaces.subinterface?.[selectedIndex]?.[
+                "openconfig-if-ip:ipv4"
+              ]?.addresses?.address?.[0]?.ip
+            }
+            rules={[
+              { required: true, message: "Введите IP" },
+              {
+                pattern: ipv4Regex,
+                message: "Некорректный формат IP-адреса",
+              },
+            ]}
+          >
+            <Input placeholder="192.168.1.10" />
+          </Form.Item>
+
+          <Form.Item
+            name="prefixLength"
+            label="Префикс"
+            rules={[
+              { required: true, message: "Введите префикс" },
+              {
+                pattern: cidrMaskRegex,
+                message: "Маска должна быть числом от 0 до 32",
+              },
+            ]}
+            initialValue={
+              subinterfaces.subinterface?.[selectedIndex]?.[
+                "openconfig-if-ip:ipv4"
+              ]?.addresses?.address?.[0]?.config["prefix-length"]
+            }
+          >
+            <Input type="number" placeholder="24" />
+          </Form.Item>
+
+          <Form.Item>
+            <Flex justify="end">
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={changeInterfaceIp.isPending}
+              >
+                Применить
+              </Button>
+            </Flex>
+          </Form.Item>
+        </Form>
+      </Modal>
     </>
   );
 };

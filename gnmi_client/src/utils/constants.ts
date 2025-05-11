@@ -78,3 +78,8 @@ interface BreadChild {
   childTitle: string | null;
   link: string;
 }
+
+export const ipv4Regex =
+  /^(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)){3}$/;
+
+export const cidrMaskRegex = /^([0-9]|[1-2][0-9]|3[0-2])$/;

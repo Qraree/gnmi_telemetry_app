@@ -23,6 +23,29 @@ export const setInterfaceState = async (
   return await response.json();
 };
 
+export const setInterfaceIP = async (
+  deviceId: number,
+  interfaceName: string,
+  index: number,
+  ip: string,
+  prefixLength: number,
+) => {
+  const baseUrl = import.meta.env.VITE_SERVER_URL;
+  return await fetch(`${baseUrl}/devices/interface/ip`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      device_id: deviceId,
+      ip,
+      prefix_length: prefixLength,
+      interface_name: interfaceName,
+      index: index,
+
+      path: `/interfaces/interface[name=${interfaceName}]/subinterfaces/subinterface[index=${index}]/ipv4/addresses/address`,
+    }),
+  });
+};
+
 export const getDeviceYang = async <T>(
   id: number,
   path: string[],

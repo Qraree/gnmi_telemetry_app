@@ -37,7 +37,7 @@ export interface OpenConfigInterfaceItem {
   };
 }
 
-interface OpenConfigInterfaceSubInterface {
+export interface OpenConfigInterfaceSubInterface {
   index: number;
   "openconfig-if-ip:ipv4": {
     addresses: {
@@ -45,6 +45,9 @@ interface OpenConfigInterfaceSubInterface {
     };
     neighbors: {
       neighbor: OpenConfigInterfaceSubInterfaceNeighbor[];
+    };
+    state: {
+      enabled: boolean;
     };
   };
   state: {
