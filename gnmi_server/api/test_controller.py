@@ -116,7 +116,6 @@ def migrate_lab_devices():
 
             for lab_device in data["srlceos01"]:
                 device = Device()
-                print(lab_device)
                 device.short_id = lab_device.get("ShortID")
                 device.name = lab_device.get("Names")[0].split("-")[-1]
                 device.image = lab_device.get("Image")

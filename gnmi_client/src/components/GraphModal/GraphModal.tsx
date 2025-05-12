@@ -55,6 +55,7 @@ export const GraphModal = ({
     if (selectedEdge) {
       refetchFirst();
       refetchSecond();
+      console.log(selectedEdge);
     }
   }, [selectedEdge]);
 
@@ -62,8 +63,10 @@ export const GraphModal = ({
     iface: OpenConfigInterfaceSubInterface | undefined,
     loading: boolean,
     label: string,
+    deviceName?: string,
   ) => (
     <Flex vertical align="center" style={{ height: 200 }}>
+      <div>{deviceName}</div>
       <RouterSVG />
       <Typography.Text strong>{label}</Typography.Text>
       {loading ? (
@@ -109,6 +112,7 @@ export const GraphModal = ({
             firstInterface?.notification[0].update[0].val,
             isLoadingFirst,
             selectedEdge?.fromPort || "—",
+            selectedEdge?.fromDeviceName,
           )}
           <div
             style={{
@@ -122,6 +126,7 @@ export const GraphModal = ({
             secondInterface?.notification?.[0]?.update?.[0]?.val,
             isLoadingSecond,
             selectedEdge?.toPort || "—",
+            selectedEdge?.toDeviceName,
           )}
         </Flex>
       </div>

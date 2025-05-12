@@ -30,6 +30,8 @@ export type VisEdge = {
   length?: number;
   fromPort?: string;
   toPort?: string;
+  fromDeviceName?: string;
+  toDeviceName?: string;
 };
 
 export type DeviceStatus = "Online" | "Offline";

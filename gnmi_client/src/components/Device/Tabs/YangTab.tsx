@@ -1,4 +1,4 @@
-import { Button, Flex, Result, Select, Steps, Tree } from "antd";
+import { Button, Flex, Result, Select, Spin, Steps, Tree } from "antd";
 import { openconfigModules } from "../../../utils/openconfig-modules.ts";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -13,6 +13,7 @@ export const YangTab = () => {
   const [yangQuery, setYangQuery] = useState<string>(openconfigModules[0]);
   const [configureStep, setConfigureStep] = useState<number>(0);
   const [editedValue, setEditedValue] = useState<string | undefined>(undefined);
+  const [isLoading, setLoading] = useState(false);
 
   const { data, refetch } = useQuery({
     queryKey: ["yang", yangQuery],
@@ -35,6 +36,8 @@ export const YangTab = () => {
 
   const handleSendChanges = (value: string) => {
     console.log(value);
+    setLoading(true);
+    setTimeout(() => setLoading(false), 600);
     setConfigureStep(3);
   };
 
@@ -54,13 +57,24 @@ export const YangTab = () => {
     refetch();
   }, [yangQuery]);
 
+  if (isLoading) {
+    return (
+      <Flex justify="center" align="center">
+        <Spin />
+      </Flex>
+    );
+  }
+
   if (configureStep === 3) {
     return (
       <Flex justify="center" align="center">
         <Result
-          status="success"
-          title="Успешно загружена конфигурация"
+          status="error"
+          title="Конфигурация не загружена"
           extra={[
+            <Button key="console" onClick={() => setConfigureStep(2)}>
+              Назад
+            </Button>,
             <Button type="primary" key="console" onClick={newOperation}>
               Новая операция
             </Button>,

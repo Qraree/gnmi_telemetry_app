@@ -13,6 +13,24 @@ export interface YangBase<T = unknown> {
   ];
 }
 
+export interface StaticRouteEntry {
+  "openconfig-network-instance:prefix": string;
+  "openconfig-network-instance:config"?: {
+    prefix: string;
+  };
+  "openconfig-network-instance:next-hops"?: {
+    "next-hop": {
+      index: string;
+      config?: {
+        index: string;
+        "next-hop": string;
+        metric?: number;
+        preference?: number;
+      };
+    }[];
+  };
+}
+
 export interface OpenConfigInterface {
   "openconfig-interfaces:interface": OpenConfigInterfaceItem[];
 }

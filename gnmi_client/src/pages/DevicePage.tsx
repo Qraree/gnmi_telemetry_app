@@ -8,6 +8,7 @@ import { YangTab } from "../components/Device/Tabs/YangTab.tsx";
 import { InterfaceTab } from "../components/Device/Tabs/InterfaceTab.tsx";
 import { SystemInfoTab } from "../components/Device/Tabs/SystemInfoTab.tsx";
 import { DeviceTab } from "../components/Device/Tabs/DeviceTab.tsx";
+import { RoutingTab } from "../components/Device/Tabs/RoutingTab.tsx";
 
 export const DevicePage = () => {
   const { device } = useParams();
@@ -43,6 +44,11 @@ export const DevicePage = () => {
     },
     {
       key: "4",
+      label: "Маршрутизация",
+      children: <RoutingTab />,
+    },
+    {
+      key: "5",
       label: "Системная информация",
       children: <SystemInfoTab />,
     },

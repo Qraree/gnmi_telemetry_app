@@ -27,6 +27,12 @@ const items: MenuProps["items"] = [
       <Link to="http://localhost:3001" target="_blank">
         Мониторинг
       </Link>
+      // <Link
+      //   to="https://cautious-spoon-wj6qgj79754cgr66-3000.app.github.dev/"
+      //   target="_blank"
+      // >
+      //   Мониторинг
+      // </Link>
     ),
   },
 ];

@@ -56,6 +56,12 @@ export const GraphPage = () => {
         length: 300,
         fromPort: "Ethernet" + c.port1.at(-1),
         toPort: "Ethernet" + c.port2.at(-1),
+        fromDeviceName: devices?.find(
+          (device: Device) => device.id === c.device1_id,
+        ).name,
+        toDeviceName: devices?.find(
+          (device: Device) => device.id === c.device2_id,
+        ).name,
       }));
 
       setVisNodes(nodes);

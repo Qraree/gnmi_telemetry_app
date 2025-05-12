@@ -16,7 +16,6 @@ device_router = APIRouter()
 def get_all_connections():
     with Session(engine) as session:
         connections = session.exec(select(Connection)).all()
-        print(connections)
         return connections
 
 
@@ -46,7 +45,6 @@ def get_one_device_specs(device_id: int):
                 target=host, username="admin", password="admin", insecure=True
             ) as gc:
                 result = gc.get(path=["system"])
-                print(result)
                 return result
 
     except Exception as e:
@@ -85,7 +83,6 @@ def get_one_device_specs(state: SetInterfaceState):
                 target=host, username="admin", password="admin", insecure=True
             ) as gc:
                 result = gc.set(update=u)
-                print(result)
                 return result
 
     except Exception as e:
@@ -129,7 +126,6 @@ def set_interface_ip(state: SetInterfaceIp):
                 target=host, username="admin", password="admin", insecure=True
             ) as gc:
                 result = gc.set(replace=u)
-                print(result)
                 return result
 
     except Exception as e:
@@ -179,7 +175,6 @@ def get_yang(body: GetYangBody):
                 target=host, username="admin", password="admin", insecure=True
             ) as gc:
                 result = gc.get(path=body.path)
-                print(result)
                 return result
 
     except Exception as e:
