@@ -55,7 +55,6 @@ export const GraphModal = ({
     if (selectedEdge) {
       refetchFirst();
       refetchSecond();
-      console.log(selectedEdge);
     }
   }, [selectedEdge]);
 
