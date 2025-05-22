@@ -19,3 +19,13 @@ class SetInterfaceIp(BaseModel):
     prefix_length: int
     interface_name: str
     index: int
+
+
+class AddStaticRoute(BaseModel):
+    device_id: int
+    prefix: str
+    next_hop: str
+
+class DeleteStaticRoute(BaseModel):
+    device_id: int
+    prefix: str

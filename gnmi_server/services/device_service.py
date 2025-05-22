@@ -4,9 +4,72 @@ from starlette.responses import JSONResponse
 
 from core.types.logging import logger
 from core.database import engine
-from core.types.yang import GetYangBody, SetInterfaceState, SetInterfaceIp
+from core.types.yang import (
+    GetYangBody,
+    SetInterfaceState,
+    SetInterfaceIp,
+    AddStaticRoute,
+    DeleteStaticRoute,
+)
 from models.Device import Device
-from services.gnmi_service import call_gnmi_get, call_gnmi_set
+from services.gnmi_service import (
+    call_gnmi_get,
+    call_gnmi_set,
+    call_gnmi_replace,
+    GNMIService,
+)
+
+
+class DeviceService:
+
+    @staticmethod
+    def yang_request(body: GetYangBody):
+        try:
+            with Session(engine) as session:
+                device = session.get(Device, body.id)
+
+                if not device:
+                    raise HTTPException(status_code=404, detail="Device not found")
+
+                if not device.type == "network":
+                    raise HTTPException(
+                        status_code=400, detail="Device type not supported"
+                    )
+
+                return call_gnmi_get(device, body.path)
+
+        except Exception as e:
+            logger.error(e)
+            return JSONResponse(
+                status_code=400,
+                content={"message": f"Ошибка запроса! {e}"},
+            )
+
+    @staticmethod
+    def remove_static_route(body: DeleteStaticRoute):
+        try:
+            with Session(engine) as session:
+                device = session.get(Device, body.device_id)
+
+                if not device:
+                    raise HTTPException(status_code=404, detail="Device not found")
+
+                if not device.type == "network":
+                    raise HTTPException(
+                        status_code=400, detail="Device type not supported"
+                    )
+
+            delete_path = [
+                f"/network-instances/network-instance[name=default]/protocols/protocol[identifier=openconfig-policy-types:STATIC][name=STATIC]/static-routes/static[prefix={body.prefix}]/"
+            ]
+
+            return GNMIService.call_gnmi_delete(device, delete_path)
+
+        except Exception as e:
+            return JSONResponse(
+                status_code=400,
+                content={"message": f"Ошибка запроса! {e}"},
+            )
 
 
 def yang_request(body: GetYangBody):
@@ -46,7 +109,7 @@ def get_device_system_info(device_id: int):
     except Exception as e:
         logger.error(e)
         return JSONResponse(
-            status_code=500,
+            status_code=400,
             content={"message": f"Ошибка запроса! {e}"},
         )
 
@@ -79,8 +142,54 @@ def set_interface_state(body: SetInterfaceState):
     except Exception as e:
         logger.error(e)
         return JSONResponse(
-            status_code=500,
+            status_code=400,
             content={"message": f"Ошибка запроса! {e}"},
+        )
+
+
+def set_static_route(body: AddStaticRoute):
+    try:
+        with Session(engine) as session:
+            device = session.get(Device, body.device_id)
+
+            if not device:
+                raise HTTPException(status_code=404, detail="Device not found")
+
+            if not device.type == "network":
+                raise HTTPException(status_code=400, detail="Device type not supported")
+
+            static_index = "AUTO_" + body.prefix
+            u = [
+                (
+                    f"/network-instances/network-instance[name=default]/protocols/protocol[identifier=openconfig-policy-types:STATIC][name=STATIC]/static-routes/static[prefix={body.prefix}]/",
+                    {
+                        "config": {
+                            "prefix": body.prefix,
+                        },
+                        "next-hops": {
+                            "next-hop": [
+                                {
+                                    "config": {
+                                        "index": static_index,
+                                        "metric": 0,
+                                        "next-hop": body.next_hop,
+                                        "preference": 1,
+                                    },
+                                    "index": static_index,
+                                }
+                            ]
+                        },
+                        "prefix": body.prefix,
+                    },
+                )
+            ]
+
+            return call_gnmi_set(device, u)
+
+    except Exception as e:
+        return JSONResponse(
+            status_code=400,
+            content={"messagse": f"Ошибка запроса! {e}"},
         )
 
 
@@ -112,8 +221,10 @@ def set_interface_ip(body: SetInterfaceIp):
                 )
             ]
 
-            return call_gnmi_set(device, u)
+            return call_gnmi_replace(device, u)
 
     except Exception as e:
-        logger.error(e)
-        return {"error": str(e)}
+        return JSONResponse(
+            status_code=400,
+            content={"messagse": f"Ошибка запроса! {e}"},
+        )

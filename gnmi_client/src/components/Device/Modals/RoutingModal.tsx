@@ -1,5 +1,7 @@
 import { Modal, Form, Input, message } from "antd";
 import { useEffect } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { addStaticRoute } from "../../../api/devices_api.ts";
 
 export interface StaticRouteData {
   prefix: string | null;
@@ -10,16 +12,17 @@ interface Props {
   open: boolean;
   initialData?: StaticRouteData;
   onClose: () => void;
-  onSubmit?: (data: StaticRouteData) => void;
+  deviceId: number;
 }
 
-export const EditStaticRouteModal = ({
+export const AddStaticRouteModal = ({
   open,
   initialData,
   onClose,
-  onSubmit,
+  deviceId,
 }: Props) => {
   const [form] = Form.useForm();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (initialData) {
@@ -29,29 +32,38 @@ export const EditStaticRouteModal = ({
 
   const handleOk = async () => {
     try {
-      const values = await form.validateFields();
-      await mockUpdateStaticRoute(values);
-      message.success("Маршрут обновлён");
-      if (onSubmit) await onSubmit(values);
-      onClose();
+      const { prefix, nextHop } = await form.validateFields();
+      addStaticRouteMutation.mutate({ deviceId, prefix, nextHop });
     } catch (err) {
       message.error("Ошибка при обновлении маршрута");
     }
   };
 
-  const mockUpdateStaticRoute = async (data: StaticRouteData) => {
-    console.log("Отправка данных на сервер:", data);
-    return new Promise((resolve) => setTimeout(resolve, 500)); // мок-задержка
-  };
+  const addStaticRouteMutation = useMutation({
+    mutationFn: ({
+      deviceId,
+      prefix,
+      nextHop,
+    }: {
+      deviceId: number;
+      prefix: string;
+      nextHop: string;
+    }) => addStaticRoute(deviceId, prefix, nextHop),
+    onSettled: () => {
+      queryClient.refetchQueries({ queryKey: ["static_routes"] });
+    },
+    onSuccess: () => onClose(),
+  });
 
   return (
     <Modal
       open={open}
-      title="Редактировать маршрут"
+      title="Добавить маршрут"
       onCancel={onClose}
       onOk={handleOk}
       okText="Сохранить"
       cancelText="Отмена"
+      loading={addStaticRouteMutation.isPending}
     >
       <Form layout="vertical" form={form}>
         <Form.Item

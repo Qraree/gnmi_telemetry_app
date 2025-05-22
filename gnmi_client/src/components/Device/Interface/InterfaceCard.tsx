@@ -60,12 +60,14 @@ export const InterfaceCard = ({ interfaceItem, device }: IProps) => {
       queryClient.invalidateQueries({ queryKey: ["devices", "connections"] });
     },
     onSuccess: () => openNotificationWithIcon("success"),
-    onError: () =>
+    onError: () => {
+      console.log("error");
       openNotificationWithIcon(
         "error",
         "Ошибка",
         "Состояние интерфейса не изменено",
-      ),
+      );
+    },
   });
 
   const changeInterfaceIp = useMutation({

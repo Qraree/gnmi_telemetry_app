@@ -1,20 +1,29 @@
 import { useParams } from "react-router";
-import { useQuery } from "@tanstack/react-query";
-import { getDeviceYang } from "../../../api/devices_api.ts";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { deleteStaticRoute, getDeviceYang } from "../../../api/devices_api.ts";
 import { StaticRouteEntry } from "../../../types/yang.ts";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button, Card, Table, Typography } from "antd";
-import { AiOutlineEdit } from "react-icons/ai";
+import { AiOutlineDelete } from "react-icons/ai";
 import {
-  EditStaticRouteModal,
+  AddStaticRouteModal,
   StaticRouteData,
 } from "../Modals/RoutingModal.tsx";
+import { useModal } from "../../../hooks/useModal.tsx";
+import { DeleteRouteModal } from "../Modals/DeleteRouteModal.tsx";
 
 const { Title } = Typography;
 
 export const RoutingTab = () => {
   const { device } = useParams();
-  const [showModal, setShowModal] = useState(false);
+  const { showModal, handleOpen, handleCancel } = useModal();
+  const {
+    showModal: showWarningModal,
+    handleOpen: openDeleteModal,
+    handleCancel: cancelDeleteModal,
+  } = useModal();
+  const queryClient = useQueryClient();
+
   const [selectedRoute, setSelectedRoute] = useState<StaticRouteData>({
     prefix: null,
     nextHop: null,
@@ -28,24 +37,18 @@ export const RoutingTab = () => {
       ]),
   });
 
-  useEffect(() => {
-    console.log("hello?");
-  }, []);
-
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
-
-  const handleOpen = () => {
-    setShowModal(true);
-  };
-
-  const handleCancel = () => {
-    setShowModal(false);
-  };
+  const deleteStaticRouteMutation = useMutation({
+    mutationFn: ({ deviceId, prefix }: { deviceId: number; prefix: string }) =>
+      deleteStaticRoute(deviceId, prefix),
+    onSettled: () => {
+      queryClient.refetchQueries({ queryKey: ["static_routes"] });
+    },
+    onSuccess: () => {
+      cancelDeleteModal();
+    },
+  });
 
   const updates = data?.notification?.[0]?.update || [];
-
   const tableData = updates.map((update, index) => {
     const val = update.val;
 
@@ -79,20 +82,19 @@ export const RoutingTab = () => {
       ),
     },
     {
-      title: "Редактировать",
+      title: "Удаление",
       key: "actions",
-      width: 50,
+      width: 150,
       render: (_: any, record: any) => (
         <Button
           type="text"
-          icon={<AiOutlineEdit />}
+          icon={<AiOutlineDelete color={"red"} />}
           onClick={() => {
-            console.log(record);
             setSelectedRoute({
               prefix: record.prefix,
               nextHop: record.nextHops[0].config["next-hop"],
             });
-            handleOpen();
+            openDeleteModal();
           }}
         />
       ),
@@ -103,6 +105,16 @@ export const RoutingTab = () => {
     <Card
       loading={isLoading}
       title={<Title level={4}>Статические маршруты</Title>}
+      extra={[
+        <Button
+          onClick={() => {
+            handleOpen();
+          }}
+          type="primary"
+        >
+          Добавить
+        </Button>,
+      ]}
     >
       {isError ? (
         <Typography.Text type="danger">
@@ -111,13 +123,24 @@ export const RoutingTab = () => {
       ) : (
         <Table columns={columns} dataSource={tableData} pagination={false} />
       )}
-      <EditStaticRouteModal
+      <AddStaticRouteModal
+        deviceId={Number(device)}
         open={showModal}
         onClose={handleCancel}
-        onSubmit={(data) => {
-          console.log(data);
-        }}
         initialData={selectedRoute}
+      />
+      <DeleteRouteModal
+        open={showWarningModal}
+        onClose={cancelDeleteModal}
+        isLoading={deleteStaticRouteMutation.isPending}
+        onOk={() => {
+          if (selectedRoute.prefix) {
+            deleteStaticRouteMutation.mutate({
+              deviceId: Number(device),
+              prefix: selectedRoute.prefix,
+            });
+          }
+        }}
       />
     </Card>
   );

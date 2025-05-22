@@ -1,5 +1,6 @@
 import { Device } from "../types/device.ts";
 import { YangBase } from "../types/yang.ts";
+import { axiosMainInstance } from "./axios.ts";
 
 export const getDeviceSpecs = async (id: number): Promise<Device> => {
   const baseUrl = import.meta.env.VITE_SERVER_URL;
@@ -36,12 +37,10 @@ export const setInterfaceIP = async (
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       device_id: deviceId,
-      ip,
+      ip: ip,
       prefix_length: prefixLength,
       interface_name: interfaceName,
       index: index,
-
-      path: `/interfaces/interface[name=${interfaceName}]/subinterfaces/subinterface[index=${index}]/ipv4/addresses/address`,
     }),
   });
 };
@@ -59,6 +58,25 @@ export const getDeviceYang = async <T>(
     },
   });
   return await response.json();
+};
+
+export const addStaticRoute = async (
+  id: number,
+  prefix: string,
+  nextHop: string,
+) => {
+  return await axiosMainInstance.post("/devices/routes/static/add", {
+    device_id: id,
+    prefix: prefix,
+    next_hop: nextHop,
+  });
+};
+
+export const deleteStaticRoute = async (id: number, prefix: string) => {
+  return await axiosMainInstance.post("/devices/routes/static/delete", {
+    device_id: id,
+    prefix: prefix,
+  });
 };
 
 export const getAllDevices = async () => {

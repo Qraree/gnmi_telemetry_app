@@ -2,13 +2,20 @@ from fastapi import APIRouter, HTTPException
 from sqlmodel import Session, select
 
 from core.database import engine
-from core.types.yang import GetYangBody, SetInterfaceState, SetInterfaceIp
+from core.types.yang import (
+    GetYangBody,
+    SetInterfaceState,
+    SetInterfaceIp,
+    AddStaticRoute,
+    DeleteStaticRoute,
+)
 from models.Device import Device, Connection
 from services.device_service import (
-    yang_request,
     get_device_system_info,
     set_interface_state,
     set_interface_ip,
+    set_static_route,
+    DeviceService,
 )
 
 device_router = APIRouter(tags=["devices"])
@@ -43,6 +50,16 @@ def change_interface_ip(state: SetInterfaceIp):
     return set_interface_ip(state)
 
 
+@device_router.post("/devices/routes/static/add")
+def add_static_route(body: AddStaticRoute):
+    return set_static_route(body)
+
+
+@device_router.post("/devices/routes/static/delete")
+def delete_static_route(body: DeleteStaticRoute):
+    return DeviceService.remove_static_route(body)
+
+
 @device_router.get("/devices/{device_id}")
 def get_one_device(device_id: int):
     with Session(engine) as session:
@@ -64,4 +81,4 @@ def create_device(device: Device):
 
 @device_router.post("/yang")
 def get_yang(body: GetYangBody):
-    return yang_request(body)
+    return DeviceService.yang_request(body)

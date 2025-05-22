@@ -6,6 +6,27 @@ from core.config import settings
 from core.types.logging import logger
 
 
+class GNMIService:
+
+    @staticmethod
+    def call_gnmi_delete(device, path):
+        try:
+            target_port = device.container_host_port
+            host = (settings.lab_server, target_port)
+
+            with gNMIclient(
+                target=host,
+                username=settings.device_username,
+                password=settings.device_password,
+                insecure=True,
+            ) as gc:
+                result = gc.set(delete=path)
+                return result
+        except Exception as e:
+            print(e)
+            raise IOError(e)
+
+
 def call_gnmi_get(device, path) -> JSONResponse | dict:
     try:
         target_port = device.container_host_port
@@ -46,4 +67,23 @@ def call_gnmi_set(device, update_data):
             result = gc.set(update=update_data)
             return result
     except Exception as e:
-        logger.error(e)
+        print(e)
+        raise IOError(e)
+
+
+def call_gnmi_replace(device, update_data):
+    try:
+        target_port = device.container_host_port
+        host = (settings.lab_server, target_port)
+
+        with gNMIclient(
+            target=host,
+            username=settings.device_username,
+            password=settings.device_password,
+            insecure=True,
+        ) as gc:
+            result = gc.set(replace=update_data)
+            return result
+    except Exception as e:
+        print(e)
+        raise IOError(e)
