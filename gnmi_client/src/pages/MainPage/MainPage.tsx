@@ -24,15 +24,9 @@ const items: MenuProps["items"] = [
   {
     key: "/monitoring",
     label: (
-      <Link to="http://localhost:3001" target="_blank">
+      <Link to={import.meta.env.VITE_GRAFANA_URL} target="_blank">
         Мониторинг
       </Link>
-      // <Link
-      //   to="https://cautious-spoon-wj6qgj79754cgr66-3000.app.github.dev/"
-      //   target="_blank"
-      // >
-      //   Мониторинг
-      // </Link>
     ),
   },
 ];

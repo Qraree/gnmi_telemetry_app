@@ -7,8 +7,8 @@ class Settings(BaseSettings):
     lab_server: str
     ssh_password: str
     ssh_username: str
-    rabbitmq_username: str
-    rabbitmq_password: str
+    device_username: str
+    device_password: str
 
     class Config:
         env_file = ".env"

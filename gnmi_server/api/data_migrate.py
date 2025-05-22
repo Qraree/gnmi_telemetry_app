@@ -6,12 +6,13 @@ from fastapi import APIRouter
 from pygnmi.client import gNMIclient
 from sqlalchemy import text
 from sqlmodel import Session, select
+from starlette.responses import JSONResponse
 
 from core.config import settings
 from core.database import engine
 from models.Device import Device, Connection
 
-test_router = APIRouter()
+test_router = APIRouter(tags=["migrate_data"])
 
 
 @test_router.get("/test/")
@@ -83,7 +84,10 @@ def migrate_connections():
         return "success"
 
     except Exception as e:
-        print(e)
+        return JSONResponse(
+            status_code=400,
+            content={"message": f"Ошибка запроса! {e}"},
+        )
 
     finally:
         ssh.close()
@@ -152,7 +156,10 @@ def migrate_lab_devices():
         return devices
 
     except Exception as e:
-        print(e)
+        return JSONResponse(
+            status_code=400,
+            content={"message": f"Ошибка запроса! {e}"},
+        )
 
     finally:
         ssh.close()

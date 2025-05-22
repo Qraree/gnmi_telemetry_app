@@ -55,8 +55,10 @@ export const InterfaceCard = ({ interfaceItem, device }: IProps) => {
       interfaceName: string;
       newState: boolean;
     }) => setInterfaceState(Number(device), interfaceName, newState),
-    onSettled: () =>
-      queryClient.refetchQueries({ queryKey: ["device_interfaces"] }),
+    onSettled: () => {
+      queryClient.refetchQueries({ queryKey: ["device_interfaces"] });
+      queryClient.invalidateQueries({ queryKey: ["devices", "connections"] });
+    },
     onSuccess: () => openNotificationWithIcon("success"),
     onError: () =>
       openNotificationWithIcon(
@@ -165,8 +167,8 @@ export const InterfaceCard = ({ interfaceItem, device }: IProps) => {
             <NanoTimestamp ns={state["last-change"]} />
           </Descriptions.Item>
           <Descriptions.Item label="Оперативный статус">
-            <Tag color={state["oper-status"] === "UP" ? "green" : "red"}>
-              {state["oper-status"]}
+            <Tag color={state["admin-status"] === "UP" ? "green" : "red"}>
+              {state["admin-status"]}
             </Tag>
           </Descriptions.Item>
         </Descriptions>

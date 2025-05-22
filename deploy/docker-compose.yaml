@@ -2,21 +2,42 @@ version: "3"
 
 
 services:
-  rabbitmq:
-    image: rabbitmq:4.1.0-management-alpine
-    container_name: rabbitmq
-    restart: always
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: admin
-      RABBITMQ_DEFAULT_PASS: admin
-      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: -rabbit disk_free_limit 2147483648
-    volumes:
-      - ./rabbitmq:/var/lib/rabbitmq
+
+  # frontend:
+  #     container_name: gnmi_frontend
+  #     build: ../gnmi_client
+  #     restart: unless-stopped
+  #     volumes:
+  #       - ../gnmi_client:/app
+  #     ports:
+  #       - "5173:5173"
+
+  # backend:
+  #   container_name: gnmi_backend
+  #   build: ../gnmi_server
+  #   env_file:
+  #     - ../gnmi_server/.env
+  #   volumes:
+  #     - ../gnmi_server:/app
+  #   ports:
+  #     - "8080:8080"
+  #   restart: unless-stopped
+
+  # postgres:
+  #   container_name: gnmi
+  #   image: postgres:15.3-alpine 
+  #   ports:
+  #     - "5433:5432"
+  #   env_file:
+  #     - ../gnmi_server/.development.env
+  #   volumes:
+  #     - ~/postgres:/var/lib/postgresql/data
+  #   restart: unless-stopped
+  #   networks:
+  #     - space
 
 
+# Мониторинг
   prometheus:
     image: prom/prometheus:v2.54.1
     volumes:
@@ -36,5 +57,6 @@ services:
       GF_SECURITY_ADMIN_USER: arista
       GF_SECURITY_ADMIN_PASSWORD: arista
       GF_SECURITY_ALLOW_EMBEDDING: true
+
 
 

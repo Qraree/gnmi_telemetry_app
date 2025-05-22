@@ -1,6 +1,6 @@
 import { LayoutPage } from "./PageLayout.tsx";
 import { Button, Col, Input, Row } from "antd";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getAllDevices,
   testRPCRequest,
@@ -11,6 +11,7 @@ import { Device } from "../types/device.ts";
 import { DeviceListCard } from "../components/DeviceListCard.tsx";
 
 export const DeviceListPage = () => {
+  const queryClient = useQueryClient();
   const { isPending, error, data } = useQuery({
     queryKey: ["devices"],
     queryFn: getAllDevices,
@@ -18,10 +19,14 @@ export const DeviceListPage = () => {
 
   const testRequest = useMutation({
     mutationFn: testRPCRequest,
+    onSuccess: () => testSshRequest.mutate(),
   });
 
   const testSshRequest = useMutation({
     mutationFn: testSSHRequest,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["devices"] });
+    },
   });
 
   const { theme } = useTheme();
@@ -45,10 +50,7 @@ export const DeviceListPage = () => {
         </Col>
         <Col span={12} style={{ textAlign: "right" }}>
           <Button type="default" onClick={() => testRequest.mutate()}>
-            + Add Device
-          </Button>
-          <Button type="default" onClick={() => testSshRequest.mutate()}>
-            test ssh
+            Обновить топологию
           </Button>
         </Col>
       </Row>
