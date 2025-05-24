@@ -75,6 +75,29 @@ class ClabAPIService:
             logger.error(e)
             raise
 
+    async def get_logs(self, node_name: str):
+        try:
+            headers = await ClabAPIService.__get_auth_headers(self)
+            headers["tail"] = "5"
+            headers["format"] = "json"
+
+            print(headers)
+            lab_name = "srlceos01"
+
+            url = f"{ClabAPIService.base_url}/api/v1/labs/{lab_name}/nodes/{node_name}/logs"
+
+            async with httpx.AsyncClient() as client:
+                response = await client.get(url, headers=headers)
+
+                response.raise_for_status()
+
+                logger.debug(f"Raw response: {response.text}")
+
+            return response.text
+
+        except Exception as e:
+            logger.error(e)
+
     async def get_all_labs(self):
         try:
             print("get all labs")

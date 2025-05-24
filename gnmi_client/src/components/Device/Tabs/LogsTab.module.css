@@ -1,0 +1,17 @@
+.editor {
+    height: 80vh;
+    width: 80%;
+}
+
+.updateButton {
+    position: absolute;
+    z-index: 1000;
+    top: 10px;
+    right: 10px;
+
+    background-color: rgba(236, 231, 231, 0.61);
+
+
+}
+
+

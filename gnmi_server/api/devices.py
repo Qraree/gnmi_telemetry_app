@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlmodel import Session, select
 
-from config.dependencies import get_device_service
+from config.dependencies import get_device_service, get_clab_service
 from core.database import engine
 from config.types.yang import (
     GetYangBody,
@@ -69,6 +69,16 @@ def get_one_device(device_id: int):
             raise HTTPException(status_code=404, detail="Device not found")
 
         return device
+
+
+@device_router.get("/devices/{device_id}/logs")
+async def get_device_logs(device_id: int, clab_service=Depends(get_clab_service)):
+    with Session(engine) as session:
+        device = session.get(Device, device_id)
+        if not device:
+            raise HTTPException(status_code=404, detail="Device not found")
+
+        return await clab_service.get_logs(device.name)
 
 
 @device_router.post("/devices/")

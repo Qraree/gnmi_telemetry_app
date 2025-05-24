@@ -1,6 +1,7 @@
 import { Device } from "../types/device.ts";
 import { YangBase } from "../types/yang.ts";
 import { axiosMainInstance } from "./axios.ts";
+import { AxiosResponse } from "axios";
 
 export const getDeviceSpecs = async (id: number): Promise<Device> => {
   const baseUrl = import.meta.env.VITE_SERVER_URL;
@@ -77,6 +78,10 @@ export const deleteStaticRoute = async (id: number, prefix: string) => {
     device_id: id,
     prefix: prefix,
   });
+};
+
+export const getDeviceLogs = async (id: number): any => {
+  return await axiosMainInstance.get(`/devices/${id}/logs`);
 };
 
 export const getAllDevices = async () => {
