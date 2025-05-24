@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     ssh_username: str
     device_username: str
     device_password: str
+    lab_server_port: str
+    redis_url: str
 
     class Config:
         env_file = ".env"

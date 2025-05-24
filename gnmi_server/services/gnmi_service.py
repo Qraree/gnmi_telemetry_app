@@ -2,8 +2,8 @@ from fastapi import HTTPException
 from pygnmi.client import gNMIclient
 from starlette.responses import JSONResponse
 
-from core.config import settings
-from core.types.logging import logger
+from core.settings import settings
+from core.logging import logger
 
 
 class GNMIService:

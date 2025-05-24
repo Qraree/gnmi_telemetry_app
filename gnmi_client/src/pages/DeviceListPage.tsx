@@ -19,7 +19,7 @@ export const DeviceListPage = () => {
 
   const testRequest = useMutation({
     mutationFn: testRPCRequest,
-    onSuccess: () => testSshRequest.mutate(),
+    // onSuccess: () => testSshRequest.mutate(),
   });
 
   const testSshRequest = useMutation({

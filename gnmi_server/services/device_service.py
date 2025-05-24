@@ -2,9 +2,9 @@ from fastapi import HTTPException
 from sqlmodel import Session
 from starlette.responses import JSONResponse
 
-from core.types.logging import logger
+from core.logging import logger
 from core.database import engine
-from core.types.yang import (
+from config.types.yang import (
     GetYangBody,
     SetInterfaceState,
     SetInterfaceIp,

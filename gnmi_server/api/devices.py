@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from sqlmodel import Session, select
 
 from core.database import engine
-from core.types.yang import (
+from config.types.yang import (
     GetYangBody,
     SetInterfaceState,
     SetInterfaceIp,

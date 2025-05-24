@@ -1,10 +1,16 @@
+from apscheduler.schedulers.background import BackgroundScheduler
 from fastapi import FastAPI
+from redis import Redis
 from sqlmodel import SQLModel
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 from api.devices import device_router
 from api.data_migrate import test_router
-from core.config import settings
+from config.enum.redis_enum import RedisEnum
+from core.jobs.gnmi_server_auth import token_update_job
+from core.redis import init_redis, close_redis
+from core.scheduler import scheduler
+from core.settings import settings
 from core.database import engine
 
 origins = [settings.client_url]
@@ -12,8 +18,14 @@ origins = [settings.client_url]
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    await token_update_job()
+
     SQLModel.metadata.create_all(engine)
+    await init_redis(app)
+    scheduler.start()
     yield
+    scheduler.shutdown()
+    await close_redis(app)
 
 
 app = FastAPI(lifespan=lifespan)
