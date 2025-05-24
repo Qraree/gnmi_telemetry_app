@@ -34,3 +34,22 @@ class ContainerInfo(TypedDict):
     NetworkSettings: NetworkSettings
     Mounts: List[Mount]
     Ports: List[Port]
+
+
+class ContainerInfoV2(TypedDict):
+    name: str
+    container_id: str
+    image: str
+    kind: str
+    state: str
+    status: str
+    ipv4_address: str
+    ipv6_address: str
+    lab_name: str
+    labPath: str
+    absLabPath: str
+    group: str
+    owner: str
+
+
+ContainerMap = Dict[str, List[ContainerInfoV2]]

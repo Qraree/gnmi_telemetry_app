@@ -1,12 +1,17 @@
 import json
 from typing import List
+import sshtunnel
 
 import paramiko
+from fastapi import HTTPException
+from pygnmi.client import gNMIclient
 from sqlalchemy import text
 from sqlmodel import Session, select
 from starlette.responses import JSONResponse
 
+from config.types.container_info import ContainerMap
 from core.database import engine
+from core.logging import logger
 from core.settings import settings
 from models.Device import Device, Connection
 
@@ -79,16 +84,81 @@ def migrate_connections_v1():
         ssh.close()
 
 
+def create_gnmi_tunnel(api_host: str, ssh_port: int, node_name: str):
+    tunnel = sshtunnel.SSHTunnelForwarder(
+        (settings.lab_server, ssh_port),
+        ssh_username="admin",
+        ssh_password="admin",
+        remote_bind_address=(node_name, 6030),
+        local_bind_address=("127.0.0.1", 57400),
+    )
+    tunnel.start()
+    return tunnel
+
+
 class DataMigrateService:
 
     def __init__(self, clab_api_service: ClabAPIService):
         self.clab_api_service = clab_api_service
 
+    async def device_gnmi_test(self):
+        try:
+            response = await self.clab_api_service.ssh_request()
+
+            print(response)
+            target_port = response["port"]
+
+            if not target_port:
+                raise HTTPException(status_code=400, detail="Target port not found")
+
+            tunnel = create_gnmi_tunnel(
+                api_host=response["host"],
+                ssh_port=response["port"],
+                node_name="clab-srlceos01-ceos1",
+            )
+
+            host = ("127.0.0.1", tunnel.local_bind_address)
+
+            with gNMIclient(
+                target=host,
+                username=settings.device_username,
+                password=settings.device_password,
+                insecure=True,
+            ) as gc:
+                return gc.capabilities()
+
+        except Exception as e:
+            logger.error(e)
+            return JSONResponse(status_code=400, content={"message": f"Ошибка! {e}"})
+
     async def migrate_devices_v2(self):
         try:
-            print("get all devices")
-            response = await self.clab_api_service.get_all_labs()
-            print(response)
+            response: ContainerMap = await self.clab_api_service.get_all_labs()
+
+            devices: List[Device] = []
+            with Session(engine) as session:
+                table_names: List[str] = ["device", "connection"]
+
+                for table in table_names:
+                    session.exec(text(f"DELETE FROM {table};"))
+
+                for lab_device in response["srlceos01"]:
+                    device = Device()
+                    device.short_name = lab_device.get("name").split("-")[-1]
+                    device.name = lab_device.get("name")
+                    device.image = lab_device.get("image")
+                    device.state = lab_device.get("state")
+                    device.status = lab_device.get("status")
+                    device.type = lab_device.get("kind")
+                    device.container_ipv4_address = lab_device.get("ipv4_address")
+                    device.container_ipv6_address = lab_device.get("ipv6_address")
+
+                    devices.append(device)
+
+                session.add_all(devices)
+                session.commit()
+
+            return response
         except Exception as e:
             print(e)
 

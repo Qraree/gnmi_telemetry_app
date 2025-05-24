@@ -35,6 +35,20 @@ async def migrate_v2(
     return await data_migrate_service.migrate_devices_v2()
 
 
+@test_router.get("/test/device_gnmi")
+async def migrate_v2(
+    data_migrate_service: DataMigrateService = Depends(get_data_migrate_service),
+):
+    return await data_migrate_service.device_gnmi_test()
+
+
+@test_router.get("/test/logging")
+def migrate_lab_devices(
+    data_migrate_service=Depends(get_data_migrate_service),
+):
+    return data_migrate_service.migrate_devices_v1()
+
+
 @test_router.get("/test/ssh")
 def migrate_lab_devices(
     data_migrate_service=Depends(get_data_migrate_service),

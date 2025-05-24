@@ -55,6 +55,26 @@ class ClabAPIService:
                 content={"message": f"Ошибка запроса! {e}"},
             )
 
+    async def ssh_request(self):
+        try:
+            headers = await ClabAPIService.__get_auth_headers(self)
+            body = {"duration": "30m"}
+
+            labName = "srlceos01"
+            nodeName = "clab-srlceos01-ceos1"
+            url = (
+                f"{ClabAPIService.base_url}/api/v1/labs/{labName}/nodes/{nodeName}/ssh"
+            )
+
+            async with httpx.AsyncClient() as client:
+                response = await client.post(url, headers=headers, json=body)
+
+            return response.json()
+
+        except Exception as e:
+            logger.error(e)
+            raise
+
     async def get_all_labs(self):
         try:
             print("get all labs")
@@ -83,10 +103,7 @@ class ClabAPIService:
 
     async def __get_auth_headers(self):
         try:
-            print("get auth headers")
-            print(RedisEnum.gnmi_server_token.value)
             token = await self.redis.get(RedisEnum.gnmi_server_token.value)
-            print(token)
 
             headers = {
                 "Content-Type": "application/json",

@@ -9,6 +9,7 @@ import { InterfaceTab } from "../components/Device/Tabs/InterfaceTab.tsx";
 import { SystemInfoTab } from "../components/Device/Tabs/SystemInfoTab.tsx";
 import { DeviceTab } from "../components/Device/Tabs/DeviceTab.tsx";
 import { RoutingTab } from "../components/Device/Tabs/RoutingTab.tsx";
+import { LogsTab } from "../components/Device/Tabs/LogsTab.tsx";
 
 export const DevicePage = () => {
   const { device } = useParams();
@@ -51,6 +52,11 @@ export const DevicePage = () => {
       key: "5",
       label: "Системная информация",
       children: <SystemInfoTab />,
+    },
+    {
+      key: "6",
+      label: "Логи",
+      children: <LogsTab />,
     },
   ];
 

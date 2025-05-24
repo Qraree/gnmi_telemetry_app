@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from sqlmodel import Session, select
 
+from config.dependencies import get_device_service
 from core.database import engine
 from config.types.yang import (
     GetYangBody,
@@ -10,13 +11,7 @@ from config.types.yang import (
     DeleteStaticRoute,
 )
 from models.Device import Device, Connection
-from services.device_service import (
-    get_device_system_info,
-    set_interface_state,
-    set_interface_ip,
-    set_static_route,
-    DeviceService,
-)
+
 
 device_router = APIRouter(tags=["devices"])
 
@@ -36,28 +31,34 @@ def get_all_devices():
 
 
 @device_router.get("/devices/{device_id}/specs")
-def get_one_device_specs(device_id: int):
-    return get_device_system_info(device_id)
+def get_one_device_specs(device_id: int, device_service=Depends(get_device_service)):
+    return device_service.get_device_system_info(device_id)
 
 
 @device_router.post("/devices/interface/state")
-def change_interface_state(state: SetInterfaceState):
-    return set_interface_state(state)
+def change_interface_state(
+    state: SetInterfaceState, device_service=Depends(get_device_service)
+):
+    return device_service.set_interface_state(state)
 
 
 @device_router.post("/devices/interface/ip")
-def change_interface_ip(state: SetInterfaceIp):
-    return set_interface_ip(state)
+def change_interface_ip(
+    state: SetInterfaceIp, device_service=Depends(get_device_service)
+):
+    return device_service.set_interface_ip(state)
 
 
 @device_router.post("/devices/routes/static/add")
-def add_static_route(body: AddStaticRoute):
-    return set_static_route(body)
+def add_static_route(body: AddStaticRoute, device_service=Depends(get_device_service)):
+    return device_service.set_static_route(body)
 
 
 @device_router.post("/devices/routes/static/delete")
-def delete_static_route(body: DeleteStaticRoute):
-    return DeviceService.remove_static_route(body)
+def delete_static_route(
+    body: DeleteStaticRoute, device_service=Depends(get_device_service)
+):
+    return device_service.remove_static_route(body)
 
 
 @device_router.get("/devices/{device_id}")
@@ -80,5 +81,5 @@ def create_device(device: Device):
 
 
 @device_router.post("/yang")
-def get_yang(body: GetYangBody):
-    return DeviceService.yang_request(body)
+def get_yang(body: GetYangBody, device_service=Depends(get_device_service)):
+    return device_service.yang_request(body)
