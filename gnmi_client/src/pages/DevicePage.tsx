@@ -4,12 +4,13 @@ import { LayoutPage } from "./PageLayout.tsx";
 import { useParams } from "react-router";
 import { useEffect } from "react";
 import { Tabs, TabsProps } from "antd";
-import { YangTab } from "../components/Device/Tabs/YangTab.tsx";
+import { YangTab } from "../components/Device/Tabs/YangTab/YangTab.tsx";
 import { InterfaceTab } from "../components/Device/Tabs/InterfaceTab.tsx";
 import { SystemInfoTab } from "../components/Device/Tabs/SystemInfoTab.tsx";
 import { DeviceTab } from "../components/Device/Tabs/DeviceTab.tsx";
 import { RoutingTab } from "../components/Device/Tabs/RoutingTab.tsx";
-import { LogsTab } from "../components/Device/Tabs/LogsTab.tsx";
+import { LogsTab } from "../components/Device/Tabs/LogsTab/LogsTab.tsx";
+import { TerminalTab } from "../components/Device/Tabs/TerminalTab.tsx";
 
 export const DevicePage = () => {
   const { device } = useParams();
@@ -57,6 +58,11 @@ export const DevicePage = () => {
       key: "6",
       label: "Логи",
       children: <LogsTab />,
+    },
+    {
+      key: "7",
+      label: "Консоль",
+      children: <TerminalTab />,
     },
   ];
 

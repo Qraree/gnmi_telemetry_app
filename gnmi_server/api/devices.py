@@ -1,7 +1,11 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlmodel import Session, select
 
-from config.dependencies import get_device_service, get_clab_service
+from config.dependencies import (
+    get_device_service,
+    get_clab_service,
+    get_ssh_session_service,
+)
 from core.database import engine
 from config.types.yang import (
     GetYangBody,
@@ -88,6 +92,18 @@ def create_device(device: Device):
         session.commit()
         session.refresh(device)
         return device
+
+
+@device_router.post("/devices/{device_id}/session/create")
+async def create_ssh_session(
+    device_id: int, ssh_session_service=Depends(get_ssh_session_service)
+):
+    with Session(engine) as session:
+        device = session.get(Device, device_id)
+        name = device.name
+
+    session_id = await ssh_session_service.create_clab_session(name)
+    return {"session_id": session_id}
 
 
 @device_router.post("/yang")

@@ -1,9 +1,9 @@
 import httpx
-import requests
 from redis import Redis
 from starlette.responses import JSONResponse
 
 from config.enum.redis_enum import RedisEnum
+from config.types.clab import SSHRequestResponse
 from core.settings import settings
 from core.logging import logger
 
@@ -55,16 +55,14 @@ class ClabAPIService:
                 content={"message": f"Ошибка запроса! {e}"},
             )
 
-    async def ssh_request(self):
+    async def ssh_request(
+        self, node_name="clab-srlceos01-ceos1", duration="30m", lab_name="srlceos01"
+    ) -> SSHRequestResponse:
         try:
             headers = await ClabAPIService.__get_auth_headers(self)
-            body = {"duration": "30m"}
+            body = {"duration": duration}
 
-            labName = "srlceos01"
-            nodeName = "clab-srlceos01-ceos1"
-            url = (
-                f"{ClabAPIService.base_url}/api/v1/labs/{labName}/nodes/{nodeName}/ssh"
-            )
+            url = f"{ClabAPIService.base_url}/api/v1/labs/{lab_name}/nodes/{node_name}/ssh"
 
             async with httpx.AsyncClient() as client:
                 response = await client.post(url, headers=headers, json=body)
@@ -78,6 +76,9 @@ class ClabAPIService:
     async def get_logs(self, node_name: str):
         try:
             headers = await ClabAPIService.__get_auth_headers(self)
+            params = {
+                "tail": "10",
+            }
             headers["tail"] = "5"
             headers["format"] = "json"
 
@@ -87,7 +88,7 @@ class ClabAPIService:
             url = f"{ClabAPIService.base_url}/api/v1/labs/{lab_name}/nodes/{node_name}/logs"
 
             async with httpx.AsyncClient() as client:
-                response = await client.get(url, headers=headers)
+                response = await client.get(url, headers=headers, params=params)
 
                 response.raise_for_status()
 

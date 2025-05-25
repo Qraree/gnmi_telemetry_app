@@ -84,6 +84,10 @@ export const getDeviceLogs = async (id: number): any => {
   return await axiosMainInstance.get(`/devices/${id}/logs`);
 };
 
+export const createDeviceSshSession = async (id: number): any => {
+  return await axiosMainInstance.post(`/devices/${id}/session/create`);
+};
+
 export const getAllDevices = async () => {
   const baseUrl = import.meta.env.VITE_SERVER_URL;
   const response = await fetch(`${baseUrl}/devices/`);

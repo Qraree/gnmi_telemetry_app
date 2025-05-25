@@ -1,10 +1,10 @@
 import { Button, Flex, Result, Select, Spin, Steps, Tree } from "antd";
-import { openconfigModules } from "../../../utils/openconfig-modules.ts";
+import { openconfigModules } from "../../../../utils/openconfig-modules.ts";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getDeviceYang } from "../../../api/devices_api.ts";
+import { getDeviceYang } from "../../../../api/devices_api.ts";
 import { useParams } from "react-router";
-import { useConvertJsonToTree } from "../../../hooks/useConvertJsonToTree.tsx";
+import { useConvertJsonToTree } from "../../../../hooks/useConvertJsonToTree.tsx";
 import { DiffEditor, Editor } from "@monaco-editor/react";
 import styles from "./YangTub.module.css";
 

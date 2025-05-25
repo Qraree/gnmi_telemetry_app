@@ -105,7 +105,6 @@ class DataMigrateService:
         try:
             response = await self.clab_api_service.ssh_request()
 
-            print(response)
             target_port = response["port"]
 
             if not target_port:

@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getDeviceLogs } from "../../../api/devices_api.ts";
-import { useEffect } from "react";
+import { getDeviceLogs } from "../../../../api/devices_api.ts";
 import { useParams } from "react-router";
 import { Button, Flex } from "antd";
 import { Editor } from "@monaco-editor/react";
@@ -13,10 +12,6 @@ export const LogsTab = () => {
     queryKey: ["logs"],
     queryFn: () => getDeviceLogs(Number(device)),
   });
-
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
 
   return (
     <Flex vertical justify="center" align="center">
