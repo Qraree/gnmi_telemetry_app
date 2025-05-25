@@ -1,8 +1,6 @@
 import { useXTerm } from "react-xtermjs";
 import { useEffect, useRef, useState } from "react";
 import useWebSocket from "react-use-websocket";
-import { useQuery } from "@tanstack/react-query";
-import { createDeviceSshSession } from "../../../api/devices_api.ts";
 import { useParams } from "react-router";
 
 export const TerminalTab = () => {

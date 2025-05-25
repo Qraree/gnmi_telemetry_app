@@ -101,7 +101,6 @@ class ClabAPIService:
 
     async def get_all_labs(self):
         try:
-            print("get all labs")
 
             headers = await ClabAPIService.__get_auth_headers(self)
             url = f"{ClabAPIService.base_url}/api/v1/labs"
@@ -117,6 +116,23 @@ class ClabAPIService:
                 status_code=504,
                 content={"message": "Clab API не ответил вовремя"},
             )
+
+        except Exception as e:
+            logger.error(e)
+            return JSONResponse(
+                status_code=400,
+                content={"message": f"Ошибка запроса! {e}"},
+            )
+
+    async def get_health(self):
+        try:
+            headers = await ClabAPIService.__get_auth_headers(self)
+            url = f"{ClabAPIService.base_url}/api/v1/health/metrics"
+
+            async with httpx.AsyncClient() as client:
+                response = await client.get(url, headers=headers)
+
+            return response.json()
 
         except Exception as e:
             logger.error(e)

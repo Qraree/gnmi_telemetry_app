@@ -4,6 +4,8 @@ from redis import Redis
 from sqlmodel import SQLModel
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
+
+from api.common import common_router
 from api.devices import device_router
 from api.data_migrate import test_router
 from api.websocket import terminal_router
@@ -39,3 +41,4 @@ app.add_middleware(
 app.include_router(device_router)
 app.include_router(test_router)
 app.include_router(terminal_router)
+app.include_router(common_router)

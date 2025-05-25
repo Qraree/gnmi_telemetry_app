@@ -29,6 +29,10 @@ const items: MenuProps["items"] = [
       </Link>
     ),
   },
+  {
+    key: "/health",
+    label: <Link to="/health">Состояние сервера</Link>,
+  },
 ];
 
 export const MainPage: React.FC = () => {

@@ -17,6 +17,7 @@ import {
 import { DeviceListPage } from "./pages/DeviceListPage.tsx";
 import { useState } from "react";
 import { ThemeContext } from "./utils/theme-context.ts";
+import { ServerHealthPage } from "./pages/ServerHealthPage.tsx";
 
 function App() {
   const queryClient = new QueryClient();
@@ -48,6 +49,7 @@ function App() {
                   <Route path="/devices" element={<DeviceListPage />} />
                   <Route path="/devices/:device" element={<DevicePage />} />
                   <Route path="/graph" element={<GraphPage />} />
+                  <Route path="/health" element={<ServerHealthPage />} />
                 </Route>
               </Routes>
             </ThemeContext>
