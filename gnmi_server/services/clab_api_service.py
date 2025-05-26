@@ -73,16 +73,13 @@ class ClabAPIService:
             logger.error(e)
             raise
 
-    async def get_logs(self, node_name: str):
+    async def get_logs(self, node_name: str, lines: int = 20):
         try:
             headers = await ClabAPIService.__get_auth_headers(self)
             params = {
-                "tail": "10",
+                "tail": f"{lines}",
             }
-            headers["tail"] = "5"
-            headers["format"] = "json"
 
-            print(headers)
             lab_name = "srlceos01"
 
             url = f"{ClabAPIService.base_url}/api/v1/labs/{lab_name}/nodes/{node_name}/logs"
@@ -126,13 +123,25 @@ class ClabAPIService:
 
     async def get_health(self):
         try:
+
             headers = await ClabAPIService.__get_auth_headers(self)
             url = f"{ClabAPIService.base_url}/api/v1/health/metrics"
 
             async with httpx.AsyncClient() as client:
                 response = await client.get(url, headers=headers)
 
-            return response.json()
+            response_json = response.json()
+
+            if (
+                response.status_code == 401
+                and response_json["error"] == "Invalid or expired token"
+            ):
+                return JSONResponse(
+                    status_code=401,
+                    content={"message": f"Invalid or expired token"},
+                )
+
+            return response_json
 
         except Exception as e:
             logger.error(e)

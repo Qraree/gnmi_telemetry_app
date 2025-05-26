@@ -1,13 +1,9 @@
 import asyncio
-import json
 
 import asyncssh
-from asyncssh import ChannelOpenError, SSHWriter, DataType
 from fastapi import APIRouter, WebSocket, Depends
 from starlette.websockets import WebSocketDisconnect
 
-from config.dependencies import get_ssh_session_service
-from core.logging import logger
 from services.clab_api_service import ClabAPIService
 from services.ssh_session_service import SSHSessionService
 

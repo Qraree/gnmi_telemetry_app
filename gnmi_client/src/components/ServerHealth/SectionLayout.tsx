@@ -10,7 +10,7 @@ export const SectionLayout = ({ title, children }: SectionLayoutProps) => {
   return (
     <Flex>
       <Flex vertical style={{ width: "100%" }}>
-        <Typography.Title>{title}</Typography.Title>
+        <Typography.Title level={2}>{title}</Typography.Title>
         {children}
       </Flex>
     </Flex>

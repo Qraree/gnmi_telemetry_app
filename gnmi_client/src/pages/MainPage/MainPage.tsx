@@ -19,7 +19,7 @@ const items: MenuProps["items"] = [
   },
   {
     key: "/graph",
-    label: <Link to="/graph">Схема устройств</Link>,
+    label: <Link to="/graph">Топология</Link>,
   },
   {
     key: "/monitoring",

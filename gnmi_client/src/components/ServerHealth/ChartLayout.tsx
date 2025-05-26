@@ -19,7 +19,7 @@ export const ChartLayout = ({ children, title, width, height }: Props) => {
         height,
       }}
     >
-      <Typography.Title level={4}>{title}</Typography.Title>
+      <Typography.Title level={5}>{title}</Typography.Title>
       <div
         style={{
           width: "100%",

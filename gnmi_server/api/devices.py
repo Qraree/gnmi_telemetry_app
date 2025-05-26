@@ -76,13 +76,15 @@ def get_one_device(device_id: int):
 
 
 @device_router.get("/devices/{device_id}/logs")
-async def get_device_logs(device_id: int, clab_service=Depends(get_clab_service)):
+async def get_device_logs(
+    device_id: int, lines: int, clab_service=Depends(get_clab_service)
+):
     with Session(engine) as session:
         device = session.get(Device, device_id)
         if not device:
             raise HTTPException(status_code=404, detail="Device not found")
 
-        return await clab_service.get_logs(device.name)
+        return await clab_service.get_logs(device.name, lines)
 
 
 @device_router.post("/devices/")

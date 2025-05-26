@@ -1,5 +1,12 @@
 import { axiosMainInstance } from "./axios.ts";
+import { AxiosResponse } from "axios";
 
-export const updateGnmiToken = () => {
-  axiosMainInstance.post("");
+interface UpdateGnmiResponse {
+  token: string;
+}
+
+export const updateGnmiToken = async (): Promise<
+  AxiosResponse<UpdateGnmiResponse>
+> => {
+  return await axiosMainInstance.get("/token/update");
 };

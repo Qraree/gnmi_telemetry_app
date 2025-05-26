@@ -80,8 +80,15 @@ export const deleteStaticRoute = async (id: number, prefix: string) => {
   });
 };
 
-export const getDeviceLogs = async (id: number): any => {
-  return await axiosMainInstance.get(`/devices/${id}/logs`);
+export const getDeviceLogs = async (
+  id: number,
+  lines: number,
+): Promise<AxiosResponse<string>> => {
+  return await axiosMainInstance.get(`/devices/${id}/logs`, {
+    params: {
+      lines: lines,
+    },
+  });
 };
 
 export const createDeviceSshSession = async (id: number): any => {

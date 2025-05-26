@@ -11,3 +11,10 @@ async def get_server_health(
     clab_api_service: ClabAPIService = Depends(get_clab_service),
 ):
     return await clab_api_service.get_health()
+
+
+@common_router.get("/token/update")
+async def update_gnmi_token(
+    clab_api_service: ClabAPIService = Depends(get_clab_service),
+):
+    return await clab_api_service.login()
