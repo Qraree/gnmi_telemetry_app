@@ -18,6 +18,8 @@ import { DeviceListPage } from "./pages/DeviceListPage.tsx";
 import { useState } from "react";
 import { ThemeContext } from "./utils/theme-context.ts";
 import { ServerHealthPage } from "./pages/ServerHealthPage.tsx";
+import { TunnelPage } from "./pages/TunnelPage.tsx";
+import { DeployPage } from "./pages/DeployPage/DeployPage.tsx";
 
 function App() {
   const queryClient = new QueryClient();
@@ -50,6 +52,8 @@ function App() {
                   <Route path="/devices/:device" element={<DevicePage />} />
                   <Route path="/graph" element={<GraphPage />} />
                   <Route path="/health" element={<ServerHealthPage />} />
+                  <Route path="/tunnel" element={<TunnelPage />} />
+                  <Route path="/deploy" element={<DeployPage />} />
                 </Route>
               </Routes>
             </ThemeContext>

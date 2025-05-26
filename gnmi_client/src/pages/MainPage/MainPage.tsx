@@ -33,6 +33,14 @@ const items: MenuProps["items"] = [
     key: "/health",
     label: <Link to="/health">Состояние сервера</Link>,
   },
+  {
+    key: "/deploy",
+    label: <Link to="/deploy">Развертывание</Link>,
+  },
+  {
+    key: "/tunnel",
+    label: <Link to="/tunnel">VXLAN туннель</Link>,
+  },
 ];
 
 export const MainPage: React.FC = () => {
