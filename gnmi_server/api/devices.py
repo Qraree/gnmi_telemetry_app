@@ -14,7 +14,7 @@ from config.types.yang import (
     AddStaticRoute,
     DeleteStaticRoute,
 )
-from models.Device import Device, Connection
+from models.models import Device, Connection
 
 
 device_router = APIRouter(tags=["devices"])

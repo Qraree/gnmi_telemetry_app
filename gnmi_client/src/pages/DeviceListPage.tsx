@@ -1,11 +1,7 @@
 import { LayoutPage } from "./PageLayout.tsx";
 import { Button, Col, Input, Row } from "antd";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  getAllDevices,
-  testRPCRequest,
-  testSSHRequest,
-} from "../api/devices_api.ts";
+import { getAllDevices, testRPCRequest } from "../api/devices_api.ts";
 import { useTheme } from "../hooks/useTheme.tsx";
 import { Device } from "../types/device.ts";
 import { DeviceListCard } from "../components/DeviceListCard.tsx";
@@ -19,14 +15,7 @@ export const DeviceListPage = () => {
 
   const testRequest = useMutation({
     mutationFn: testRPCRequest,
-    // onSuccess: () => testSshRequest.mutate(),
-  });
-
-  const testSshRequest = useMutation({
-    mutationFn: testSSHRequest,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["devices"] });
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["devices"] }),
   });
 
   const { theme } = useTheme();

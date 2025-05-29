@@ -1,3 +1,5 @@
+import datetime
+
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional, List
 
@@ -53,3 +55,35 @@ class Device(SQLModel, table=True):
             conn.device1 for conn in self.connections_as_device2 if conn.device1
         ]
         return connected
+
+
+class UserRoleLink(SQLModel, table=True):
+    user_id: int = Field(foreign_key="user.id", primary_key=True)
+    role_id: int = Field(foreign_key="role.id", primary_key=True)
+
+
+class User(SQLModel, table=True):
+    id: int = Field(default=None, primary_key=True)
+    name: str
+    group: str | None
+
+    labs: List["Lab"] = Relationship(back_populates="user")
+    roles: List["Role"] = Relationship(back_populates="users", link_model=UserRoleLink)
+
+
+class Lab(SQLModel, table=True):
+    id: int = Field(default=None, primary_key=True)
+    name: str
+    path: str | None
+    created: datetime.date
+    status: str
+
+    user_id: int = Field(foreign_key="user.id")
+    user: Optional["User"] = Relationship(back_populates="labs")
+
+
+class Role(SQLModel, table=True):
+    id: int = Field(default=None, primary_key=True)
+    value: str
+
+    users: List["User"] = Relationship(back_populates="roles", link_model=UserRoleLink)

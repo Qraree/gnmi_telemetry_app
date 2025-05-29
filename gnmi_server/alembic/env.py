@@ -11,8 +11,11 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 from sqlmodel import SQLModel
-from models.Device import Device
-from models.Device import Connection
+from models.models import Device
+from models.models import Connection
+from models.models import Lab
+from models.models import Role
+from models.models import User, UserRoleLink
 
 target_metadata = SQLModel.metadata
 

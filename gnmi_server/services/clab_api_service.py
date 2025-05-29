@@ -1,9 +1,11 @@
 import httpx
+from fastapi import HTTPException
+from httpx import Response
 from redis import Redis
 from starlette.responses import JSONResponse
 
 from config.enum.redis_enum import RedisEnum
-from config.types.clab import SSHRequestResponse
+from config.types.clab import SSHRequestResponse, ContainerList
 from core.settings import settings
 from core.logging import logger
 
@@ -67,20 +69,26 @@ class ClabAPIService:
             async with httpx.AsyncClient() as client:
                 response = await client.post(url, headers=headers, json=body)
 
-            return response.json()
+            return ClabAPIService.response_validator(response)
+
+        except HTTPException as http_exception:
+            raise http_exception
 
         except Exception as e:
             logger.error(e)
             raise
 
-    async def get_logs(self, node_name: str, lines: int = 20):
+    async def get_logs(
+        self,
+        node_name: str,
+        lines: int = 20,
+        lab_name: str = "srlceos01",
+    ):
         try:
             headers = await ClabAPIService.__get_auth_headers(self)
             params = {
                 "tail": f"{lines}",
             }
-
-            lab_name = "srlceos01"
 
             url = f"{ClabAPIService.base_url}/api/v1/labs/{lab_name}/nodes/{node_name}/logs"
 
@@ -91,7 +99,31 @@ class ClabAPIService:
 
                 logger.debug(f"Raw response: {response.text}")
 
+            ClabAPIService.response_validator(response)
+
             return response.text
+
+        except HTTPException as http_exception:
+            return JSONResponse(
+                status_code=400,
+                content=http_exception.detail,
+            )
+
+        except Exception as e:
+            logger.error(e)
+
+    async def inspect_lab_with_details(self, lab_name: str) -> ContainerList:
+        try:
+            headers = await ClabAPIService.__get_auth_headers(self)
+            url = f"{ClabAPIService.base_url}/api/v1/labs/{lab_name}?details=true"
+
+            async with httpx.AsyncClient() as client:
+                response = await client.get(url, headers=headers)
+
+            return ClabAPIService.response_validator(response)
+
+        except HTTPException as http_exception:
+            raise http_exception
 
         except Exception as e:
             logger.error(e)
@@ -105,7 +137,7 @@ class ClabAPIService:
             async with httpx.AsyncClient() as client:
                 response = await client.get(url, headers=headers)
 
-            return response.json()
+            return ClabAPIService.response_validator(response)
 
         except httpx.TimeoutException:
             logger.error("Запрос к Clab API превысил таймаут")
@@ -130,18 +162,7 @@ class ClabAPIService:
             async with httpx.AsyncClient() as client:
                 response = await client.get(url, headers=headers)
 
-            response_json = response.json()
-
-            if (
-                response.status_code == 401
-                and response_json["error"] == "Invalid or expired token"
-            ):
-                return JSONResponse(
-                    status_code=401,
-                    content={"message": f"Invalid or expired token"},
-                )
-
-            return response_json
+            return ClabAPIService.response_validator(response)
 
         except Exception as e:
             logger.error(e)
@@ -164,3 +185,15 @@ class ClabAPIService:
         except Exception as e:
             logger.error(e)
             raise
+
+    @staticmethod
+    def response_validator(response: Response):
+        response_json = response.json()
+
+        if (
+            response.status_code == 401
+            and response_json["error"] == "Invalid or expired token"
+        ):
+            raise HTTPException(401, {"message": f"Invalid or expired token"})
+
+        return response_json

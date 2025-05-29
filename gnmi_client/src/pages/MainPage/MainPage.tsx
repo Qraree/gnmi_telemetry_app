@@ -67,7 +67,7 @@ export const MainPage: React.FC = () => {
           items={items}
           style={{ backgroundColor: theme.primaryColor, border: "none" }}
         />
-        <Flex vertical style={{ width: "100%", height: "82%" }} justify="end">
+        <Flex vertical style={{ width: "100%" }} justify="end">
           <Switch
             style={{ width: "20%", marginLeft: 10 }}
             checkedChildren={<FaSun style={{ marginTop: 5 }} />}

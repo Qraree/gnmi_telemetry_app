@@ -43,7 +43,7 @@ async def migrate_v2(
 
 
 @test_router.get("/test/ssh")
-def migrate_lab_devices(
+async def migrate_lab_devices(
     data_migrate_service=Depends(get_data_migrate_service),
 ):
-    return data_migrate_service.migrate_devices_v1()
+    return await data_migrate_service.migrate_devices_v2("hello2")

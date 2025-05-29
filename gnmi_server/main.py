@@ -8,8 +8,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.common import common_router
 from api.devices import device_router
 from api.data_migrate import test_router
+from api.lab import lab_router
 from api.websocket import terminal_router
-from core.jobs.gnmi_server_auth import token_update_job
 from core.redis import init_redis, close_redis
 from core.scheduler import scheduler
 from core.settings import settings
@@ -20,7 +20,6 @@ origins = [settings.client_url]
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await token_update_job()
 
     SQLModel.metadata.create_all(engine)
     await init_redis(app)
@@ -42,3 +41,4 @@ app.include_router(device_router)
 app.include_router(test_router)
 app.include_router(terminal_router)
 app.include_router(common_router)
+app.include_router(lab_router)

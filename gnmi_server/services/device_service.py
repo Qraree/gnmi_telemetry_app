@@ -11,7 +11,7 @@ from config.types.yang import (
     AddStaticRoute,
     DeleteStaticRoute,
 )
-from models.Device import Device
+from models.models import Device
 from services.gnmi_service import (
     GNMIService,
 )

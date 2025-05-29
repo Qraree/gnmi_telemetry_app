@@ -3,12 +3,6 @@ import { YangBase } from "../types/yang.ts";
 import { axiosMainInstance } from "./axios.ts";
 import { AxiosResponse } from "axios";
 
-export const getDeviceSpecs = async (id: number): Promise<Device> => {
-  const baseUrl = import.meta.env.VITE_SERVER_URL;
-  const response = await fetch(`${baseUrl}/devices/${id}/specs`);
-  return await response.json();
-};
-
 export const setInterfaceState = async (
   id: number,
   interfaceName: string,
@@ -91,7 +85,12 @@ export const getDeviceLogs = async (
   });
 };
 
-export const createDeviceSshSession = async (id: number): any => {
+export const testRPCRequest = async (): Promise<void> => {
+  const response = await axiosMainInstance.get("/test/ssh");
+  return response.data;
+};
+
+export const createDeviceSshSession = async (id: number) => {
   return await axiosMainInstance.post(`/devices/${id}/session/create`);
 };
 
@@ -110,17 +109,5 @@ export const getOneDevice = async (id: number): Promise<Device> => {
 export const getAllConnections = async () => {
   const baseUrl = import.meta.env.VITE_SERVER_URL;
   const response = await fetch(`${baseUrl}/connections`);
-  return await response.json();
-};
-
-export const testRPCRequest = async (): Promise<void> => {
-  const baseUrl = import.meta.env.VITE_SERVER_URL;
-  const response = await fetch(`${baseUrl}/test/device_gnmi`);
-  return await response.json();
-};
-
-export const testSSHRequest = async (): Promise<void> => {
-  const baseUrl = import.meta.env.VITE_SERVER_URL;
-  const response = await fetch(`${baseUrl}/test/connections`);
   return await response.json();
 };
