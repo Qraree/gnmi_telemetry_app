@@ -5,6 +5,7 @@ from sqlmodel import SQLModel
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 
+from api.auth import auth_router
 from api.common import common_router
 from api.devices import device_router
 from api.data_migrate import test_router
@@ -42,3 +43,4 @@ app.include_router(test_router)
 app.include_router(terminal_router)
 app.include_router(common_router)
 app.include_router(lab_router)
+app.include_router(auth_router)
