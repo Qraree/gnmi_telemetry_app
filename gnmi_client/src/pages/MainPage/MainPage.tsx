@@ -41,6 +41,14 @@ const items: MenuProps["items"] = [
     key: "/tunnel",
     label: <Link to="/tunnel">VXLAN туннель</Link>,
   },
+  {
+    key: "/topologies",
+    label: <Link to="/topologies">Список топологий</Link>,
+  },
+  {
+    key: "/users",
+    label: <Link to="/users">Список пользователей</Link>,
+  },
 ];
 
 export const MainPage: React.FC = () => {

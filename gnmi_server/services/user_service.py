@@ -1,17 +1,23 @@
-from typing import Sequence
+from typing import Sequence, List
 
-from sqlmodel import Session, select
+from sqlmodel import Session, select, SQLModel
 from starlette.responses import JSONResponse
 
 from config.types.user import UserCreate
-from core.database import engine
+from core.database import engine, SessionLocal
 from models.models import User
 from services.clab_api_service import ClabAPIService
 
 
+class UserResponse(SQLModel):
+    id: int
+    name: str
+    group: str
+
+
 class UserService:
 
-    def __init__(self, clab_api_service: ClabAPIService, db: Session):
+    def __init__(self, clab_api_service: ClabAPIService, db: SessionLocal):
         self.clab_api_service = clab_api_service
         self.db = db
 
@@ -37,9 +43,12 @@ class UserService:
 
             return user
 
-    async def get_users(self) -> Sequence[User]:
-        users = self.db.exec(select(User)).all()
-        return users
+    async def get_users(self) -> List[UserResponse]:
+
+        result = self.db.execute(select(User))
+        users = result.scalars().all()
+
+        return [UserResponse.model_validate(user) for user in users]
 
     async def delete_user_by_id(self, user_id: int):
         with Session(engine) as session:

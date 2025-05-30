@@ -74,6 +74,8 @@ export const breadcrumbsMap: Record<string, BreadChild> = {
   health: { title: "Состояние сервера", link: "/health", childTitle: null },
   tunnel: { title: "Туннелирование", link: "/tunnel", childTitle: null },
   deploy: { title: "Развертывание", link: "/deploy", childTitle: null },
+  topologies: { title: "Топологии", link: "/topologies", childTitle: null },
+  users: { title: "Пользователи", link: "/users", childTitle: null },
 };
 
 interface BreadChild {

@@ -1,12 +1,13 @@
 from typing import List
 
 from fastapi import APIRouter, Depends
+from sqlmodel import SQLModel
 
 from config.dependencies import get_clab_service, get_user_service
 from config.types.user import UserCreate
 from models.models import User
 from services.clab_api_service import ClabAPIService
-from services.user_service import UserService
+from services.user_service import UserService, UserResponse
 
 auth_router = APIRouter(tags=["auth"])
 
@@ -34,7 +35,7 @@ async def get_user(
     return await user_service.get_user_by_id(user_id)
 
 
-@auth_router.get("/user/all", response_model=List[User])
+@auth_router.get("/user/all/", response_model=List[UserResponse])
 async def get_users(
     user_service: UserService = Depends(get_user_service),
 ):
