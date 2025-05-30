@@ -19,7 +19,7 @@ async def user_login(
     return await clab_api_service.get_health()
 
 
-@auth_router.get("/auth/register")
+@auth_router.post("/user/")
 async def user_register(
     body: UserCreate,
     user_service: UserService = Depends(get_user_service),
